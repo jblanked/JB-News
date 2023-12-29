@@ -1,4 +1,4 @@
-# News API Wrapper Library
+# JB-News
 
 This library is a comprehensive wrapper for JBlanked's News API. It leverages the power of OpenAI, Machine Learning, and MQL5's Calendar to provide developers with easy access to news data across all computer languages, including MQL4 and Python.
 
