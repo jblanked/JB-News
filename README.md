@@ -13,7 +13,7 @@ This library is a comprehensive wrapper for JBlanked's News API. It leverages th
 ```
 pip install jb-news
 ```
-
+This API is freely accessible through our library and through GET requests. Get your API key from: https://www.jblanked.com/profile/. Note that the free tier has a rate limit of once every 5 minutes, but VIP members enjoy unrestricted access.
 ## Usage
 
 After installation, import the class:
@@ -26,7 +26,7 @@ Then set a variable as an instance of the CJBNews class:
 ```python
 jb = CJBNews()
 ```
-Next, get your API key from: https://www.jblanked.com/profile/. A list of Event IDs are found on https://www.jblanked.com/news/api/docs/.
+A list of Event IDs are found on https://www.jblanked.com/news/api/docs/.
 
 Next, set your API key and Event ID:
 
@@ -43,9 +43,12 @@ if jb.start(api_key):
 Lastly, load the event info of the specified Event ID:
 ```python
     if jb.load(event_id):  
-        name = jb.info.name # event name
-        currency = jb.info.currency # event currency
-        event_id = jb.info.eventID # event id
+        name = jb.info.name 
+        currency = jb.info.currency 
+        event_id = jb.info.eventID 
+        history = jb.info.history 
+        machine_learning = jb.info.machine_learning
+        smart_analysis = jb.info.smart_analysis
 
         # print the news info
         print(f"Event Name: {name}\nEvent ID: {event_id}\nCurrency: {currency}")

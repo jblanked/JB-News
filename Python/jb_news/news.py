@@ -15,6 +15,9 @@ class CJBNews:
         name: str
         currency: str
         eventID: int
+        history: list
+        machine_learning: dict
+        smart_analysis: dict
 
     def start(self, api_key) -> bool:
         url = "https://www.jblanked.com/news/api/full-list/"
@@ -45,6 +48,9 @@ class CJBNews:
                 self.info.name = event["Name"]
                 self.info.currency = currency
                 self.info.eventID = event["Event_ID"]
+                self.info.history = event["History"]
+                self.info.machine_learning = event["MachineLearning"]
+                self.info.smart_analysis = event["SmartAnalysis"]
                 return True
 
     def _eventList(self):
@@ -85,5 +91,8 @@ class CJBNews:
                     "Name": event["Name"],
                     "Currency": currency,
                     "Event_ID": event["Event_ID"],
+                    "History": event["History"],
+                    "MachineLearning": event["MachineLearning"],
+                    "SmartAnalysis": event["SmartAnalysis"],
                 }
             )
