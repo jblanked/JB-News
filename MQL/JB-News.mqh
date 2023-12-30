@@ -167,7 +167,7 @@ enum_news_trend CJBNews::EventInfo::trendML(const string outcome)
       if(machineLearning[q][0] == outcome){
          const double bullish = division((double)machineLearning[q][1] + (double)machineLearning[q][3] + (double)machineLearning[q][5],3);
          const double bearish = division((double)machineLearning[q][2] + (double)machineLearning[q][4] + (double)machineLearning[q][6],3);  
-         const double accuracy = division((double)machineLearning[q][7] + (double)machineLearning[q][8] + (double)machineLearning[q][9],3); 
+         const double accuracy = division((double)machineLearning[q][7] + (double)machineLearning[q][8] + (double)machineLearning[q][9],3) * 100; 
          if(accuracy>50){ 
          if(bullish>bearish) return ENUM_BULL;
          else return ENUM_BEAR;
