@@ -1,10 +1,10 @@
 //+------------------------------------------------------------------+
 //|                                                 News-Library.mqh |
 //|                                          Copyright 2023,JBlanked |
-//|                                        https://www.jblanked.com/ |
+//|                          https://www.jblanked.com/news/api/docs/ |
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2023,JBlanked"
-#property link      "https://www.jblanked.com/"
+#property link      "https://www.jblanked.com/news/api/docs/"
 #property description "Access JBlanked's News Library that includes Machine Learning, Auto Smart Analysis, and Event History information."
 
 #import "Wininet.dll"
@@ -58,34 +58,51 @@ int InternetReadFile(int, string, int, int& OneInt[]);
    #include <JB-News.mqh>
 
    CJBNews jb;
-   string empty[];
+   const string api_key = "Your-API-Key"; // API key
+   const long eventID = 756020001; // Event ID
    
    int OnInit()  
    {
    
-      if(jb.start("Your-API-Key")){
-         if(jb.load(840040001)){
-           
-           Print("Name: " + jb.info.name);
-           Print("Currency: " + jb.info.currency);
-           Print("Event ID: " + (string)jb.info.eventID);
-           
-            return INIT_SUCCEEDED;
-            }
-         else
-           {
-            return INIT_FAILED;
-           }
-         
+      if(jb.start(api_key) && jb.load(756020001)){
+         EventSetTimer(300);
+         return INIT_SUCCEEDED;
          }
       else
          return INIT_FAILED;
    }
+   
+   void OnTimer() // refresh API every 5 minutes
+   {
+      if(!jb.start(api_key))
+      {
+      Alert("Failed to refresh data");
+      ExpertRemove();
+      }
+      else
+      {
+       jb.load(756020001);
+      }
+   }
+   
+   void OnTick()
+   {
+      for(int i = 0; i < 250; i++){ // loop through event history
+         const string event_date = jb.info.eventHistory[i][0];
+         if(jb.info.isEventTime(event_date,TimeCurrent())) // if current time is event time
+         {
+         // Execute Code Here
+         }
+      }
+   }
+   
+   
 
 */
 
 #include <jason_with_search.mqh> // JSON library
-enum enum_list_choice{names,ids}; // enum for eventList function
+enum enum_list_choice{ENUM_NAMES,ENUM_IDS}; // enum for eventList function
+enum enum_news_trend{ENUM_BULL,ENUM_BEAR,ENUM_NEUTRAL};
  
 class CJBNews
 {
@@ -104,6 +121,7 @@ class CJBNews
       int place;
       CJAVal JSON;
       CJAVal NZD,USD,CAD,AUD,EUR,CHF,GBP,JPY;
+      double act,forc,prev;
       CJAVal EventTemp,HistTemp, Hist2Temp, MLTemp, SATemp;
       long total_events, total_usd, total_eur, total_nzd, total_gbp, total_chf, total_jpy, total_aud, total_cad;
       string EventHistory[8][60][250][4];
@@ -113,23 +131,124 @@ class CJBNews
       string EventCurrencies[8];
       long EventIDs[8][60];
       void json_set(CJAVal & Currency, long event_total, int currency);
+
+   public:
+      bool start(const string api_key);
+      bool load(const long eventID);
+      void eventList(string & destination_list[], const enum_list_choice names_or_ids = ENUM_IDS);
+       
       
+      // structure to hold all of the event information
       struct EventInfo
       {
-         string name;
-         string currency;
-         long eventID;
-         string eventHistory[250][4];
-         string machineLearning[14][10];
-         string smartAnalysis[14][2];
-      }; 
+         private:
+            double division(double numerator,double denominator){return denominator == 0 ? 0 : numerator / denominator;}
+         public:
+            enum_news_trend trendML(const string outcome);
+            enum_news_trend trendSA(const string outcome);
+            string outcome(const string actual, const string forecast, const string previous);
+            bool isEventTime(string eventTime,const datetime currentTime){return (datetime)eventTime == currentTime;}
+            string name;
+            string currency;
+            long eventID;
+            string eventHistory[250][4];
+            string machineLearning[14][10];
+            string smartAnalysis[14][2];
+      };
       
-   public:
-      bool start(string api_key);
-      bool load(long eventID);
-      void eventList(string & destination_list[], enum_list_choice names_or_ids);
       EventInfo info;  // holds the event info after loading
 };
+//+------------------------------------------------------------------+
+//|       Get the Machine Learning Trend based upon the outcome      |
+//+------------------------------------------------------------------+
+enum_news_trend CJBNews::EventInfo::trendML(const string outcome)
+{ 
+   for(int q = 0; q < 13; q++)
+      if(machineLearning[q][0] == outcome){
+         const double bullish = division((double)machineLearning[q][1] + (double)machineLearning[q][3] + (double)machineLearning[q][5],3);
+         const double bearish = division((double)machineLearning[q][2] + (double)machineLearning[q][4] + (double)machineLearning[q][6],3);  
+         const double accuracy = division((double)machineLearning[q][7] + (double)machineLearning[q][8] + (double)machineLearning[q][9],3); 
+         if(accuracy>50){ 
+         if(bullish>bearish) return ENUM_BULL;
+         else return ENUM_BEAR;
+         }
+         else return ENUM_BEAR;
+      }
+      else return ENUM_BEAR;
+            
+   return ENUM_NEUTRAL;
+}
+//+------------------------------------------------------------------+
+//|       Get the Smart Analysis Trend based upon the outcome        |
+//+------------------------------------------------------------------+
+enum_news_trend CJBNews::EventInfo::trendSA(const string outcome)
+{
+   
+   for(int q = 0; q < 13; q++)
+      if(smartAnalysis[q][0] == outcome){
+         if(smartAnalysis[q][1] == "Bullish")
+            return ENUM_BULL;
+         else if(smartAnalysis[q][1] == "Bearish")
+            return ENUM_BEAR;
+         else
+            return ENUM_NEUTRAL;
+      }
+            
+   return ENUM_NEUTRAL;
+}
+//+------------------------------------------------------------------+
+//|                     Get the outcome                              |
+//+------------------------------------------------------------------+
+string CJBNews::EventInfo::outcome(const string actual, const string forecast, const string previous)
+{
+   const string patterns[13] = {
+        "Actual > Forecast > Previous",
+        "Actual > Forecast Forecast < Previous",
+        "Actual > Forecast Actual < Previous",
+       "Actual > Forecast Forecast = Previous",
+       "Actual > Forecast Actual = Previous",
+       "Actual < Forecast < Previous",
+       "Actual < Forecast Forecast > Previous",
+       "Actual < Forecast Actual > Previous",
+       "Actual < Forecast = Previous",
+       "Actual = Forecast = Previous",
+       "Actual = Forecast > Previous",
+       "Actual = Forecast < Previous",
+       "Actual < Forecast Actual = Previous"
+      };
+      
+   if(actual > forecast && forecast > previous)
+      return patterns[0];
+   else if(actual > forecast && forecast < previous && actual > previous)
+      return patterns[1];
+   else if(actual > forecast && actual < previous)
+      return patterns[2]; 
+   else if(actual > forecast && forecast == previous)
+      return patterns[3];       
+   else if(actual > forecast && actual == previous)
+      return patterns[4];
+      
+   else if(actual < forecast && forecast < previous)
+      return patterns[5];
+   else if(actual < forecast && forecast > previous && actual < previous)
+      return patterns[6];
+   else if(actual < forecast && actual > previous)
+      return patterns[7]; 
+   else if(actual < forecast && forecast == previous)
+      return patterns[8];
+   else if(actual < forecast && actual == previous)
+      return patterns[9]; 
+            
+   else if(actual == forecast && actual == previous)
+      return patterns[10];
+   else if(actual == forecast && forecast > previous)
+      return patterns[11];
+   else if(actual == forecast && forecast < previous)
+      return patterns[12];  
+   
+   else return "Data Not Loaded";
+         
+}
 //+------------------------------------------------------------------+
 //|                 Get list of News Events in the API               |
 //+------------------------------------------------------------------+
@@ -141,7 +260,7 @@ void CJBNews::eventList(string & destination_list[], enum_list_choice names_or_i
    
    switch(names_or_ids)
    {
-      case names:
+      case ENUM_NAMES:
          for(c = 0; c < 8; c++){
             for(d = 0; d < 60; d++)
                if(EventNames[c][d] !=  NULL)
@@ -152,7 +271,8 @@ void CJBNews::eventList(string & destination_list[], enum_list_choice names_or_i
                }
             }
           break;
-       case ids:
+          
+       default:
          for(c = 0; c < 8; c++){
             for(d = 0; d < 60; d++)
                if((string)EventIDs[c][d] !=  "0")
@@ -321,7 +441,7 @@ bool CJBNews::start(string api_key)
 //+------------------------------------------------------------------+
 void CJBNews::json_set(CJAVal & Currency, long event_total, int currency){
       
-      string patterns[13] = {
+      const string patterns[13] = {
         "Actual > Forecast > Previous",
         "Actual > Forecast Forecast < Previous",
         "Actual > Forecast Actual < Previous",
@@ -420,4 +540,5 @@ void CJBNews::json_set(CJAVal & Currency, long event_total, int currency){
             
          }
          
-      }
+
+}
