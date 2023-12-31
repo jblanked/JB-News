@@ -79,51 +79,52 @@ class CJBNews:
             for pat in patterns:
                 val = self.machine_learning["Outcomes"]
                 for item in val:
-                    if item == pat:
-                        acc = (
-                            float(self.machine_learning["1 Hour Accuracy"])
-                            + float(self.machine_learning["30 Minute Accuracy"])
-                            + float(self.machine_learning["1 Minute Accuracy"])
-                        ) * 100
+                    if pat == outcome:
+                        if item == pat:
+                            acc = (
+                                float(self.machine_learning["1 Hour Accuracy"])
+                                + float(self.machine_learning["30 Minute Accuracy"])
+                                + float(self.machine_learning["1 Minute Accuracy"])
+                            ) * 100
 
-                        bullish = self._division(
-                            (
-                                float(val[pat]["1 Minute"]["Bullish"])
-                                + float(val[pat]["30 Minute"]["Bullish"])
-                                + float(val[pat]["1 Hour"]["Bullish"])
-                            ),
-                            3,
-                        )
-                        bearish = self._division(
-                            (
-                                float(val[pat]["1 Minute"]["Bearish"])
-                                + float(val[pat]["30 Minute"]["Bearish"])
-                                + float(val[pat]["1 Hour"]["Bearish"])
-                            ),
-                            3,
-                        )
-                        accuracy = self._division(acc, 3)
+                            bullish = self._division(
+                                (
+                                    float(val[pat]["1 Minute"]["Bullish"])
+                                    + float(val[pat]["30 Minute"]["Bullish"])
+                                    + float(val[pat]["1 Hour"]["Bullish"])
+                                ),
+                                3,
+                            )
+                            bearish = self._division(
+                                (
+                                    float(val[pat]["1 Minute"]["Bearish"])
+                                    + float(val[pat]["30 Minute"]["Bearish"])
+                                    + float(val[pat]["1 Hour"]["Bearish"])
+                                ),
+                                3,
+                            )
+                            accuracy = self._division(acc, 3)
 
-                        if accuracy > 0.5:
-                            if bullish > bearish:
-                                return "Bullish"
-                            elif bearish > bullish:
-                                return "Bearish"
+                            if accuracy > 0.5:
+                                if bullish > bearish:
+                                    return "Bullish"
+                                elif bearish > bullish:
+                                    return "Bearish"
+                                else:
+                                    return "Neutral"
                             else:
                                 return "Neutral"
-                        else:
-                            return "Neutral"
 
-        def isEventTime(self, eventTime, currentTime):
-            if (
-                datetime.datetime.strptime(eventTime, "%Y-%m-%dT%H:%M:%SZ")
-                == currentTime
-            ):
+        def isEventTime(self, iteration, currentTime):
+            # (datetime)eventHistory[iteration][0] != 0 && (datetime)eventHistory[iteration][0] == currentTime;}
+            eventTime = self.history[iteration]["Date"]
+            eventTime = datetime.datetime.strptime(eventTime, "%Y-%m-%d %H:%M:%S")
+            if eventTime != 0 and eventTime == currentTime:
                 return True
             else:
                 return False
 
-        def outcome(self, actual: float, forecast: float, previous: float):
+        def outcome(self, iteration):
             patterns = [
                 "Actual > Forecast > Previous",
                 "Actual > Forecast Forecast < Previous",
@@ -139,6 +140,10 @@ class CJBNews:
                 "Actual = Forecast < Previous",
                 "Actual < Forecast Actual = Previous",
             ]
+            actual = self.history[iteration]["Actual"]
+            forecast = self.history[iteration]["Forecast"]
+            previous = self.history[iteration]["Previous"]
+
             if actual > forecast and forecast > previous:
                 return patterns[0]
             elif actual > forecast and forecast < previous and actual > previous:
@@ -168,8 +173,11 @@ class CJBNews:
             else:
                 return "Data Not Loaded"
 
-    def start(self, api_key) -> bool:
+    def get(self, api_key) -> bool:
         url = "https://www.jblanked.com/news/api/full-list/"
+        if len(api_key) < 30:
+            print("Error: Invalid API Key")
+            return False
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Api-Key {api_key}",

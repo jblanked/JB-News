@@ -37,7 +37,7 @@ event_id = 756020001 # CHF CPI
 
 Next step is to connect to the API by using the start method. You only need to do this once:
 ```python
-if jb.start(api_key):  
+if jb.get(api_key):  
 ```
 
 Lastly, load the event info of the specified Event ID:
