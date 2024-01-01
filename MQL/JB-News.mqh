@@ -370,10 +370,11 @@ void CJBNews::eventList(string & destination_list[])
 //+------------------------------------------------------------------+
 bool CJBNews::load(long eventID)
 {
-   for(a = 0; l < 8; a++)
+   for(a = 0; a < 8; a++)
       for(l = 0; l < 60; l++)
          if(EventIDs[a][l] == eventID)
             {
+            
             info.name = EventNames[a][l];
             info.currency = EventCurrencies[a];
             info.eventID = EventIDs[a][l];

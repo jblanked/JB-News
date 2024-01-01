@@ -35,7 +35,7 @@ api_key = "YOUR_API_KEY_HERE"
 event_id = 756020001 # CHF CPI
 ```
 
-Next step is to connect to the API by using the start method. You only need to do this once:
+Next step is to connect to the API by using the get method. 
 ```python
 if jb.get(api_key):  
 ```
