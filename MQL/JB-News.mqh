@@ -154,7 +154,7 @@ class CJBNews
             string currency;
             long eventID;
             string category;
-            string eventHistory[250][4];
+            string eventHistory[250][10];
             string machineLearning[14][10];
             string smartAnalysis[14][2];
             
@@ -390,6 +390,12 @@ bool CJBNews::load(long eventID)
                info.eventHistory[hist][1] = EventHistory[a][l][hist][1];
                info.eventHistory[hist][2] = EventHistory[a][l][hist][2];
                info.eventHistory[hist][3] = EventHistory[a][l][hist][3];
+               info.eventHistory[hist][4] = EventHistory[a][l][hist][4];
+               info.eventHistory[hist][5] = EventHistory[a][l][hist][5];
+               info.eventHistory[hist][6] = EventHistory[a][l][hist][6];
+               info.eventHistory[hist][7] = EventHistory[a][l][hist][7];
+               info.eventHistory[hist][8] = EventHistory[a][l][hist][8];
+               info.eventHistory[hist][9] = EventHistory[a][l][hist][9];
                }
               }
                
