@@ -47,6 +47,7 @@ Lastly, load the event info of the specified Event ID:
         currency = jb.info.currency 
         event_id = jb.info.eventID 
         history = jb.info.history 
+        category = jb.info.category
         machine_learning = jb.info.machine_learning
         smart_analysis = jb.info.smart_analysis
 

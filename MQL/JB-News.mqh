@@ -136,6 +136,7 @@ class CJBNews
       string EventNames[8][60];
       string EventCurrencies[8];
       long EventIDs[8][60];
+      string EventCategories[8][60];
       void json_set(CJAVal & Currency, long event_total, int currency);
       void eventList(string & destination_list[]);
       void eventList(long & destination_list[]);
@@ -152,6 +153,7 @@ class CJBNews
             string name;
             string currency;
             long eventID;
+            string category;
             string eventHistory[250][4];
             string machineLearning[14][10];
             string smartAnalysis[14][2];
@@ -378,6 +380,7 @@ bool CJBNews::load(long eventID)
             info.name = EventNames[a][l];
             info.currency = EventCurrencies[a];
             info.eventID = EventIDs[a][l];
+            info.category = EventCategories[a][l];
            
             
             for(hist = 0; hist < 250; hist++){
@@ -553,6 +556,7 @@ void CJBNews::json_set(CJAVal & Currency, long event_total, int currency){
             EventTemp = Currency["Events"][evnt];
             EventNames[currency][evnt] = EventTemp["Name"].ToStr();
             EventIDs[currency][evnt] = EventTemp["Event_ID"].ToInt();
+            EventCategories[currency][evnt] = EventTemp["Category"].ToStr();
             
             switch(currency)
             {

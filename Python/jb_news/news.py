@@ -24,6 +24,7 @@ class CJBNews:
         name: str
         currency: str
         eventID: int
+        category: str
         history: list
         machine_learning: dict
         smart_analysis: dict
@@ -191,6 +192,7 @@ class CJBNews:
             return True
         else:
             print(f"Error: {response.status_code}")
+            print(response.json())
             return False
 
     def load(self, eventID) -> bool:
@@ -206,6 +208,7 @@ class CJBNews:
                 self.info.name = event["Name"]
                 self.info.currency = currency
                 self.info.eventID = event["Event_ID"]
+                self.info.category = event["Category"]
                 self.info.history = event["History"]
                 self.info.machine_learning = event["MachineLearning"]
                 self.info.smart_analysis = event["SmartAnalysis"]
@@ -253,6 +256,7 @@ class CJBNews:
                     "Name": event["Name"],
                     "Currency": currency,
                     "Event_ID": event["Event_ID"],
+                    "Category": event["Category"],
                     "History": event["History"],
                     "MachineLearning": event["MachineLearning"],
                     "SmartAnalysis": event["SmartAnalysis"],
