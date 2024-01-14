@@ -124,13 +124,14 @@ class CJBNews
       int b;
       int c;
       int d;
+      int e;
       int place;
       CJAVal JSON;
       CJAVal NZD,USD,CAD,AUD,EUR,CHF,GBP,JPY;
       double act,forc,prev;
       CJAVal EventTemp,HistTemp, Hist2Temp, MLTemp, SATemp;
       long total_events, total_usd, total_eur, total_nzd, total_gbp, total_chf, total_jpy, total_aud, total_cad;
-      string EventHistory[8][60][250][4];
+      string EventHistory[8][60][250][11];
       string MachineLearning[8][60][14][10];
       string SmartAnalysis[8][60][14][2];
       string EventNames[8][60];
@@ -140,6 +141,22 @@ class CJBNews
       void json_set(CJAVal & Currency, long event_total, int currency);
       void eventList(string & destination_list[]);
       void eventList(long & destination_list[]);
+
+      
+      struct HistoryInfo
+      {
+         string name;
+         string currency;
+         long eventID;
+         string category;
+         datetime date;
+         double actual;
+         double forecast;
+         double previous;
+         string outcome;
+         string strength;
+         string quality;
+      };
       
       struct EventInfo
       {
@@ -149,12 +166,12 @@ class CJBNews
             enum_news_trend trendML(const string outcome);
             enum_news_trend trendSA(const string outcome); 
             string outcome(const int iteration);
-            bool isEventTime(const int iteration,const datetime currentTime){return (datetime)eventHistory[iteration][0] != 0 && (datetime)eventHistory[iteration][0] == currentTime;}
+            bool isEventTime(const int iteration,const datetime currentTime){return (datetime)eventHistory[iteration].date != 0 && (datetime)eventHistory[iteration].date == currentTime;}
             string name;
             string currency;
             long eventID;
             string category;
-            string eventHistory[250][10];
+            HistoryInfo eventHistory[];
             string machineLearning[14][10];
             string smartAnalysis[14][2];
             
@@ -192,11 +209,13 @@ class CJBNews
       
    public:
       string api_key;
-      bool get();// connets to api with your api key and loads all data
+      bool get();                      // connects to api with your api key and loads all data
+      bool calendar();                 // connects api with your key and loads all the calendar data
       bool load(const long eventID);   // sets the appropriate .info properties to the eventID's event information
       string eventNames[];             // list of all the event names
       long eventIDs[];                 // list of all the event IDs
       EventInfo info;                  // holds the event info after loading
+      HistoryInfo history[];        // holds the history info after loading the calendar
       
       enum_news_trend CJBNews::runAll(const datetime currentTime,enum_ml_sa trendType = ENUM_ML_SA)
       { 
@@ -234,6 +253,88 @@ class CJBNews
               
       
 };
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool CJBNews::calendar(void)
+{ 
+    if (StringLen(api_key)<30) return false;
+    
+    bytesRead = 0;
+    result = "";
+    static const string url = "https://www.jblanked.com/news/api/calendar/";
+    const string headers = "Content-Type: application/json" + "\r\n" + "Authorization: Api-Key " + api_key; 
+
+    // Initialize WinHTTP
+    const int hInternet = InternetOpenW("MyApp", 1, NULL, NULL, 0);
+    if (hInternet)
+    {
+        // Open a URL
+        const int hUrl = InternetOpenUrlW(hInternet, url, NULL, 0, 0, 0);
+        if (hUrl)
+        {
+                // Send the request headers
+                if (HttpSendRequestW(hUrl, headers, StringLen(headers), buffer, 0))
+                {
+                    // Read the response
+                    while (InternetReadFile(hUrl, buffer, ArraySize(buffer) - 1, bytesRead) && bytesRead > 0)
+                    {
+                        buffer[bytesRead] = 0; // Null-terminate the buffer
+                        result += CharArrayToString(buffer, 0, bytesRead, CP_UTF8); // Append the data to the result string
+                    }
+                }
+                else
+                {
+                return false;
+                }
+                
+                InternetCloseHandle(hUrl); // Close the request handle
+
+            InternetCloseHandle(hUrl); // Close the URL handle
+        }
+        else
+        {
+        return false;
+        }
+        InternetCloseHandle(hInternet); // Close the WinHTTP handle
+    }
+    else
+    {
+    return false;
+    }
+    
+    if (result != "") {
+        JSON.Deserialize(result, CP_UTF8); // deserialize into JSON format
+                  
+         CJAVal temp;
+         ZeroMemory(history);
+         for(e = 0; e < 10000; e++){
+            temp = JSON[e];
+            if(datetime(temp["Date"].ToStr())==0)
+               break;
+            else {
+               ArrayResize(history,e+1);
+               history[e].actual = temp["Actual"].ToDbl();
+               history[e].forecast = temp["Forecast"].ToDbl();
+               history[e].previous = temp["Previous"].ToDbl();
+               history[e].category = temp["Category"].ToStr();
+               history[e].date = datetime(temp["Date"].ToStr());
+               history[e].eventID = temp["Event_ID"].ToInt();
+               history[e].name = temp["Name"].ToStr();
+               history[e].outcome = temp["Outcome"].ToStr();
+               history[e].quality = temp["Quality"].ToStr();
+               history[e].strength = temp["Strength"].ToStr();
+               history[e].currency = temp["Currency"].ToStr();
+            }
+         }
+            
+        return true;
+    }
+    else
+      {
+       return false;
+      }
+}
 //+------------------------------------------------------------------+
 //|       Get the Machine Learning Trend based upon the outcome      |
 //+------------------------------------------------------------------+
@@ -293,9 +394,9 @@ string CJBNews::EventInfo:: outcome(const int iteration)
        "Actual < Forecast Actual = Previous"
       };
    
-   const double actual = (double)eventHistory[iteration][1];
-   const double forecast = (double)eventHistory[iteration][2];
-   const double previous = (double)eventHistory[iteration][3];
+   const double actual = (double)eventHistory[iteration].actual;
+   const double forecast = (double)eventHistory[iteration].forecast;
+   const double previous = (double)eventHistory[iteration].previous;
       
    if(actual > forecast && forecast > previous)
       return patterns[0];
@@ -381,21 +482,23 @@ bool CJBNews::load(long eventID)
             info.currency = EventCurrencies[a];
             info.eventID = EventIDs[a][l];
             info.category = EventCategories[a][l];
-           
-            
+
+            ZeroMemory(info.eventHistory);
             for(hist = 0; hist < 250; hist++){
                if(int(EventHistory[a][l][hist][1]) != 0)
-               {
-               info.eventHistory[hist][0] = EventHistory[a][l][hist][0];
-               info.eventHistory[hist][1] = EventHistory[a][l][hist][1];
-               info.eventHistory[hist][2] = EventHistory[a][l][hist][2];
-               info.eventHistory[hist][3] = EventHistory[a][l][hist][3];
-               info.eventHistory[hist][4] = EventHistory[a][l][hist][4];
-               info.eventHistory[hist][5] = EventHistory[a][l][hist][5];
-               info.eventHistory[hist][6] = EventHistory[a][l][hist][6];
-               info.eventHistory[hist][7] = EventHistory[a][l][hist][7];
-               info.eventHistory[hist][8] = EventHistory[a][l][hist][8];
-               info.eventHistory[hist][9] = EventHistory[a][l][hist][9];
+               { 
+               ArrayResize(info.eventHistory,hist+1);
+               info.eventHistory[hist].name = EventHistory[a][l][hist][0];
+               info.eventHistory[hist].currency = EventHistory[a][l][hist][1];
+               info.eventHistory[hist].eventID = long(EventHistory[a][l][hist][2]);
+               info.eventHistory[hist].category = EventHistory[a][l][hist][3];
+               info.eventHistory[hist].date = datetime(EventHistory[a][l][hist][4]);
+               info.eventHistory[hist].actual = double(EventHistory[a][l][hist][5]);
+               info.eventHistory[hist].forecast = double(EventHistory[a][l][hist][6]);
+               info.eventHistory[hist].previous = double(EventHistory[a][l][hist][7]);
+               info.eventHistory[hist].outcome = EventHistory[a][l][hist][8];
+               info.eventHistory[hist].strength = EventHistory[a][l][hist][9];
+               info.eventHistory[hist].quality = EventHistory[a][l][hist][10];
                }
               }
                
@@ -578,15 +681,22 @@ void CJBNews::json_set(CJAVal & Currency, long event_total, int currency){
              
             //--- Event History
             HistTemp = EventTemp["History"];
-          
-                      
+
+                        
                for(hist = 0; hist < 250; hist++){
                   Hist2Temp = HistTemp[hist];
                      if(Hist2Temp["Date"].ToInt() != 0){
-                     EventHistory[currency][evnt][hist][0] = Hist2Temp["Date"].ToStr();
-                     EventHistory[currency][evnt][hist][1] = Hist2Temp["Actual"].ToStr();  
-                     EventHistory[currency][evnt][hist][2] = Hist2Temp["Forecast"].ToStr();
-                     EventHistory[currency][evnt][hist][3] = Hist2Temp["Previous"].ToStr(); 
+                     EventHistory[currency][evnt][hist][0] = Hist2Temp["Name"].ToStr();
+                     EventHistory[currency][evnt][hist][1] = Hist2Temp["Currency"].ToStr();  
+                     EventHistory[currency][evnt][hist][2] = Hist2Temp["Event_ID"].ToStr();
+                     EventHistory[currency][evnt][hist][3] = Hist2Temp["Category"].ToStr(); 
+                     EventHistory[currency][evnt][hist][4] = Hist2Temp["Date"].ToStr();
+                     EventHistory[currency][evnt][hist][5] = Hist2Temp["Actual"].ToStr();  
+                     EventHistory[currency][evnt][hist][6] = Hist2Temp["Forecast"].ToStr();
+                     EventHistory[currency][evnt][hist][7] = Hist2Temp["Previous"].ToStr(); 
+                     EventHistory[currency][evnt][hist][8] = Hist2Temp["Outcome"].ToStr();
+                     EventHistory[currency][evnt][hist][9] = Hist2Temp["Strength"].ToStr();  
+                     EventHistory[currency][evnt][hist][10] = Hist2Temp["Quality"].ToStr();
                      
                      }
                      else break;
