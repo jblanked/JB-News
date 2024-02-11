@@ -58,7 +58,7 @@ Lastly, load the event info of the specified Event ID:
 Alternatively, you can load the calendar:
 ```python
 if jb.calendar(api_key,today=True):
-    for event in calendar_info:
+    for event in jb.calendar_info:
         name = event.name
         currency = event.currency 
         event_id = event.eventID 
