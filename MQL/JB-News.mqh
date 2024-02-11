@@ -1,11 +1,13 @@
 //+------------------------------------------------------------------+
 //|                                                 News-Library.mqh |
-//|                                          Copyright 2023,JBlanked |
+//|                                          Copyright 2024,JBlanked |
 //|                          https://www.jblanked.com/news/api/docs/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2023,JBlanked"
+#property copyright "Copyright 2024,JBlanked"
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property description "Access JBlanked's News Library that includes Machine Learning, Auto Smart Analysis, and Event History information."
+
+// Last Update: February 10th, 2024
 
 #import "Wininet.dll"
 int InternetOpenW(string name, int config, string, string, int);
@@ -153,6 +155,7 @@ class CJBNews
          double actual;
          double forecast;
          double previous;
+         double projection;
          string outcome;
          string strength;
          string quality;
@@ -210,7 +213,7 @@ class CJBNews
    public:
       string api_key;
       bool get();                      // connects to api with your api key and loads all data
-      bool calendar();                 // connects api with your key and loads all the calendar data
+      bool calendar(bool today=false); // connects api with your key and loads all the calendar data
       bool load(const long eventID);   // sets the appropriate .info properties to the eventID's event information
       string eventNames[];             // list of all the event names
       long eventIDs[];                 // list of all the event IDs
@@ -256,7 +259,7 @@ class CJBNews
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-bool CJBNews::calendar(void)
+bool CJBNews::calendar(bool today=false)
 { 
     if (StringLen(api_key)<30) return false;
     
@@ -310,21 +313,51 @@ bool CJBNews::calendar(void)
          ZeroMemory(history);
          for(e = 0; e < 10000; e++){
             temp = JSON[e];
-            if(datetime(temp["Date"].ToStr())==0)
-               break;
-            else {
-               ArrayResize(history,e+1);
-               history[e].actual = temp["Actual"].ToDbl();
-               history[e].forecast = temp["Forecast"].ToDbl();
-               history[e].previous = temp["Previous"].ToDbl();
-               history[e].category = temp["Category"].ToStr();
-               history[e].date = datetime(temp["Date"].ToStr());
-               history[e].eventID = temp["Event_ID"].ToInt();
-               history[e].name = temp["Name"].ToStr();
-               history[e].outcome = temp["Outcome"].ToStr();
-               history[e].quality = temp["Quality"].ToStr();
-               history[e].strength = temp["Strength"].ToStr();
-               history[e].currency = temp["Currency"].ToStr();
+            if(!today){
+               if(datetime(temp["Date"].ToStr())==0)
+                  break;
+               else {
+                  ArrayResize(history,e+1);
+                  history[e].actual = temp["Actual"].ToDbl();
+                  history[e].forecast = temp["Forecast"].ToDbl();
+                  history[e].previous = temp["Previous"].ToDbl();
+                  history[e].category = temp["Category"].ToStr();
+                  history[e].date = datetime(temp["Date"].ToStr());
+                  history[e].eventID = temp["Event_ID"].ToInt();
+                  history[e].name = temp["Name"].ToStr();
+                  history[e].outcome = temp["Outcome"].ToStr();
+                  history[e].quality = temp["Quality"].ToStr();
+                  history[e].strength = temp["Strength"].ToStr();
+                  history[e].currency = temp["Currency"].ToStr();
+                  history[e].projection = temp["Projection"].ToDbl();
+               }
+            }
+            else
+            {
+               const datetime todayy = datetime(TimeToString(TimeCurrent(),TIME_DATE));
+               const datetime temp_time = datetime(TimeToString(StringToTime(temp["Date"].ToStr()),TIME_DATE));
+               if(temp_time!=todayy && temp_time<todayy){
+                  break;
+                  }
+               else if(temp_time!=todayy && temp_time>todayy){
+                  //continue;
+                  }
+               else {
+                  ArrayResize(history,e+1);
+                  history[e].actual = temp["Actual"].ToDbl();
+                  history[e].forecast = temp["Forecast"].ToDbl();
+                  history[e].previous = temp["Previous"].ToDbl();
+                  history[e].category = temp["Category"].ToStr();
+                  history[e].date = temp_time;
+                  history[e].eventID = temp["Event_ID"].ToInt();
+                  history[e].name = temp["Name"].ToStr();
+                  history[e].outcome = temp["Outcome"].ToStr();
+                  history[e].quality = temp["Quality"].ToStr();
+                  history[e].strength = temp["Strength"].ToStr();
+                  history[e].currency = temp["Currency"].ToStr();
+                  history[e].projection = temp["Projection"].ToDbl();
+               }
+            
             }
          }
             
