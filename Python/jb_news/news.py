@@ -12,12 +12,28 @@ class CJBNews:
         self.info = self._EventInfo
         self._machine_learning = {}
         self._smart_analysis = {}
+        self.calendar_info = []
 
     def _division(self, a: float, b: float):
         if b == 0:
             return 0
         else:
             return a / b
+
+    @dataclass
+    class _CalendarInfo:
+        name: str
+        currency: str
+        eventID: int
+        category: str
+        date: datetime
+        actual: float
+        forecast: float
+        previous: float
+        outcome: str
+        strength: str
+        quality: str
+        projection: str
 
     @dataclass
     class _EventInfo:
@@ -28,6 +44,21 @@ class CJBNews:
         history: list
         machine_learning: dict
         smart_analysis: dict
+        patterns = [
+            "Actual > Forecast > Previous",
+            "Actual > Forecast Forecast < Previous",
+            "Actual > Forecast Actual < Previous",
+            "Actual > Forecast Forecast = Previous",
+            "Actual > Forecast Actual = Previous",
+            "Actual < Forecast < Previous",
+            "Actual < Forecast Forecast > Previous",
+            "Actual < Forecast Actual > Previous",
+            "Actual < Forecast = Previous",
+            "Actual = Forecast = Previous",
+            "Actual = Forecast > Previous",
+            "Actual = Forecast < Previous",
+            "Actual < Forecast Actual = Previous",
+        ]
 
         def _division(self, a: float, b: float):
             if b == 0:
@@ -36,22 +67,7 @@ class CJBNews:
                 return a / b
 
         def trendSA(self, outcome) -> str:
-            patterns = [
-                "Actual > Forecast > Previous",
-                "Actual > Forecast Forecast < Previous",
-                "Actual > Forecast Actual < Previous",
-                "Actual > Forecast Forecast = Previous",
-                "Actual > Forecast Actual = Previous",
-                "Actual < Forecast < Previous",
-                "Actual < Forecast Forecast > Previous",
-                "Actual < Forecast Actual > Previous",
-                "Actual < Forecast = Previous",
-                "Actual = Forecast = Previous",
-                "Actual = Forecast > Previous",
-                "Actual = Forecast < Previous",
-                "Actual < Forecast Actual = Previous",
-            ]
-            for pat in patterns:
+            for pat in self.patterns:
                 for value in self.smart_analysis:
                     if str(value) == str(pat) and str(value) == str(outcome):
                         if str(self.smart_analysis[value]) == "Bullish":
@@ -62,22 +78,8 @@ class CJBNews:
                             return "Neutral"
 
         def trendML(self, outcome) -> str:
-            patterns = [
-                "Actual > Forecast > Previous",
-                "Actual > Forecast Forecast < Previous",
-                "Actual > Forecast Actual < Previous",
-                "Actual > Forecast Forecast = Previous",
-                "Actual > Forecast Actual = Previous",
-                "Actual < Forecast < Previous",
-                "Actual < Forecast Forecast > Previous",
-                "Actual < Forecast Actual > Previous",
-                "Actual < Forecast = Previous",
-                "Actual = Forecast = Previous",
-                "Actual = Forecast > Previous",
-                "Actual = Forecast < Previous",
-                "Actual < Forecast Actual = Previous",
-            ]
-            for pat in patterns:
+
+            for pat in self.patterns:
                 val = self.machine_learning["Outcomes"]
                 for item in val:
                     if pat == outcome:
@@ -126,53 +128,64 @@ class CJBNews:
                 return False
 
         def outcome(self, iteration):
-            patterns = [
-                "Actual > Forecast > Previous",
-                "Actual > Forecast Forecast < Previous",
-                "Actual > Forecast Actual < Previous",
-                "Actual > Forecast Forecast = Previous",
-                "Actual > Forecast Actual = Previous",
-                "Actual < Forecast < Previous",
-                "Actual < Forecast Forecast > Previous",
-                "Actual < Forecast Actual > Previous",
-                "Actual < Forecast = Previous",
-                "Actual = Forecast = Previous",
-                "Actual = Forecast > Previous",
-                "Actual = Forecast < Previous",
-                "Actual < Forecast Actual = Previous",
-            ]
             actual = self.history[iteration]["Actual"]
             forecast = self.history[iteration]["Forecast"]
             previous = self.history[iteration]["Previous"]
 
             if actual > forecast and forecast > previous:
-                return patterns[0]
+                return self.patterns[0]
             elif actual > forecast and forecast < previous and actual > previous:
-                return patterns[1]
+                return self.patterns[1]
             elif actual > forecast and actual < previous:
-                return patterns[2]
+                return self.patterns[2]
             elif actual > forecast and forecast == previous:
-                return patterns[3]
+                return self.patterns[3]
             elif actual > forecast and actual == previous:
-                return patterns[4]
+                return self.patterns[4]
             elif actual < forecast and forecast < previous:
-                return patterns[5]
+                return self.patterns[5]
             elif actual < forecast and forecast > previous and actual < previous:
-                return patterns[6]
+                return self.patterns[6]
             elif actual < forecast and actual > previous:
-                return patterns[7]
+                return self.patterns[7]
             elif actual < forecast and forecast == previous:
-                return patterns[8]
+                return self.patterns[8]
             elif actual < forecast and actual == previous:
-                return patterns[9]
+                return self.patterns[9]
             elif actual == forecast and actual == previous:
-                return patterns[10]
+                return self.patterns[10]
             elif actual == forecast and forecast > previous:
-                return patterns[11]
+                return self.patterns[11]
             elif actual == forecast and forecast < previous:
-                return patterns[12]
+                return self.patterns[12]
             else:
                 return "Data Not Loaded"
+
+    def calendar(self, api_key, today=False, this_week=False) -> bool:
+        if today and not this_week:
+            url = "https://www.jblanked.com/news/api/calendar/today/"
+        elif this_week and not today:
+            url = "https://www.jblanked.com/news/api/calendar/week/"
+        else:
+            url = "https://www.jblanked.com/news/api/calendar/"
+
+        if len(api_key) < 30:
+            print("Error: Invalid API Key")
+            return False
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Api-Key {api_key}",
+        }
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+            data = response.json()
+            self._setCalendarList(data)
+            return True
+        else:
+            print(f"Error: {response.status_code}")
+            print(response.json())
+            return False
 
     def get(self, api_key) -> bool:
         url = "https://www.jblanked.com/news/api/full-list/"
@@ -262,3 +275,34 @@ class CJBNews:
                     "SmartAnalysis": event["SmartAnalysis"],
                 }
             )
+
+    def _setCalendarList(self, json_data):
+        for event in json_data:
+            json = {
+                "Name": event["Name"],
+                "Currency": event["Currency"],
+                "Event_ID": event["Event_ID"],
+                "Category": event["Category"],
+                "Date": event["Date"],
+                "Actual": event["Actual"],
+                "Forecast": event["Forecast"],
+                "Previous": event["Previous"],
+                "Outcome": event["Outcome"],
+                "Strength": event["Strength"],
+                "Quality": event["Quality"],
+                "Projection": event["Projection"],
+            }
+            event = self._CalendarInfo
+            event.name = json["Name"]
+            event.currency = json["Currency"]
+            event.eventID = json["Event_ID"]
+            event.category = json["Category"]
+            event.date = json["Date"]
+            event.actual = json["Actual"]
+            event.forecast = json["Forecast"]
+            event.previous = json["Previous"]
+            event.outcome = json["Outcome"]
+            event.strength = json["Strength"]
+            event.quality = json["Quality"]
+            event.projection = json["Projection"]
+            self.calendar_info.append(event)

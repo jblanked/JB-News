@@ -53,3 +53,24 @@ Lastly, load the event info of the specified Event ID:
 
         # print the news info
         print(f"Event Name: {name}\nEvent ID: {event_id}\nCurrency: {currency}")
+```
+
+Alternatively, you can load the calendar:
+```python
+if jb.calendar(api_key,today=True):
+    for event in calendar_info:
+        name = event.name
+        currency = event.currency 
+        event_id = event.eventID 
+        category = event.category 
+        date = event.date 
+        actual = event.actual
+        forecast = event.forecast 
+        previous = event.previous 
+        outcome = event.outcome 
+        strength = event.strength 
+        quality = event.quality 
+        projection = event.projection 
+
+        # print the calendar info
+        print(f"Event Name: {name}\nEvent ID: {event_id}\nCurrency: {currency}\nDate: {date}\nActual: {actual}\Forecast: {forecast}\Previous: {previous}")
