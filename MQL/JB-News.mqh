@@ -7,7 +7,7 @@
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property description "Access JBlanked's News Library that includes Machine Learning, Auto Smart Analysis, and Event History information."
 
-// Last Update: February 10th, 2024
+// Last Update: February 18th, 2024
 
 #import "Wininet.dll"
 int InternetOpenW(string name, int config, string, string, int);
@@ -475,7 +475,7 @@ void CJBNews::eventList(long & destination_list[])
       for(d = 0; d < 60; d++)
          if(EventIDs[c][d] !=  NULL)
          {
-         ArrayResize(destination_list,destination_list.Size()+1);
+         ArrayResize(destination_list,ArraySize(destination_list)+1);
          destination_list[place] = EventIDs[c][d];
          place++;
          }
@@ -494,7 +494,7 @@ void CJBNews::eventList(string & destination_list[])
       for(d = 0; d < 60; d++)
          if(EventNames[c][d] !=  NULL)
          {
-         ArrayResize(destination_list,destination_list.Size()+1);
+         ArrayResize(destination_list,ArraySize(destination_list)+1);
          destination_list[place] = EventNames[c][d];
          place++;
          }
