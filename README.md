@@ -73,4 +73,4 @@ if jb.calendar(api_key,today=True):
         projection = event.projection 
 
         # print the calendar info
-        print(f"Event Name: {name}\nEvent ID: {event_id}\nCurrency: {currency}\nDate: {date}\nActual: {actual}\Forecast: {forecast}\Previous: {previous}")
+        print(f"Event Name: {name}\nEvent ID: {event_id}\nCurrency: {currency}\nDate: {date}\nActual: {actual}\nForecast: {forecast}\nPrevious: {previous}")
