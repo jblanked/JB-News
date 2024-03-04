@@ -55,7 +55,7 @@ Lastly, load the event info of the specified Event ID:
         print(f"Event Name: {name}\nEvent ID: {event_id}\nCurrency: {currency}")
 ```
 
-Alternatively, you can load the calendar:
+Alternatively, instead of using the get method, you can load the calendar:
 ```python
 if jb.calendar(api_key,today=True):
     for event in jb.calendar_info:
