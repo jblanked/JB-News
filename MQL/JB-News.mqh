@@ -7,7 +7,7 @@
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property description "Access JBlanked's News Library that includes Machine Learning, Auto Smart Analysis, and Event History information."
 
-// Last Update: February 18th, 2024
+// Last Update: March 5th, 2024
 
 #import "Wininet.dll"
 int InternetOpenW(string name, int config, string, string, int);
@@ -22,36 +22,6 @@ bool InternetQueryDataAvailable(int, int &);
 bool InternetSetOptionW(int, int, int &, int);
 int InternetConnectW(int, string, int, string, string, int, int, int); 
 int InternetReadFile(int, string, int, int& OneInt[]);
-   
-#define INTERNET_OPTION_SECURITY_FLAGS 31
-#define SECURITY_FLAG_IGNORE_REVOCATION 32
-#define INTERNET_OPTION_IGNORE_OFFLINE 37
-#define INTERNET_OPEN_TYPE_DIRECT 1
-#define INTERNET_FLAG_RELOAD 0x80000000
-#define INTERNET_FLAG_NO_CACHE_WRITE 0x04000000
-#define INTERNET_FLAG_PRAGMA_NOCACHE 0x00000100
-#define INTERNET_FLAG_NO_UI 0x00000200
-#define INTERNET_FLAG_RAW_DATA 0x40000000
-#define INTERNET_FLAG_KEEP_CONNECTION 0x00400000
-#define INTERNET_FLAG_SECURE 0x00800000
-#define INTERNET_FLAG_IGNORE_CERT_CN_INVALID 0x00001000
-#define INTERNET_FLAG_IGNORE_CERT_DATE_INVALID 0x00002000
-#define INTERNET_FLAG_IGNORE_REDIRECT_TO_HTTP 0x00008000
-#define INTERNET_FLAG_IGNORE_REDIRECT_TO_HTTPS 0x00004000
-#define INTERNET_FLAG_IGNORE_REDIRECT_TO_HTTPS_ 0x00010000
-#define INTERNET_FLAG_OFFLINE 0x01000000
-#define INTERNET_FLAG_SECURE_SCHANNEL 0x00004000
-#define INTERNET_FLAG_TRANSFER_ASCII 0x00000001
-#define INTERNET_FLAG_TRANSFER_BINARY 0x00000002
-#define INTERNET_ERROR_BASE 12000
-#define INTERNET_ERROR_LAST (INTERNET_ERROR_BASE + 2000)
-
-#define HTTP_QUERY_FLAG_NUMBER 0x20000000
-#define HTTP_QUERY_STATUS_CODE 19
-#define HTTP_QUERY_FLAG_NUMBER64 0x2000000000000000
-#define HTTP_QUERY_RAW_HEADERS 21
-#define HTTP_STATUS_DENIED 401
-#define HTTP_STATUS_PROXY_AUTH_REQ 407
 #import
 
 /*
@@ -189,15 +159,15 @@ class CJBNews
                for(int q = 0; q < 250; q++)
                   if(isEventTime(q,currentTime)){
                      const string oc = outcome(q);
-                     const enum_news_trend ml = trendML(oc);
+                     const enum_news_trend mL = trendML(oc);
                      const enum_news_trend sa = trendSA(oc);
-                     if(trendType == ENUM_ML) return ml;
+                     if(trendType == ENUM_ML) return mL;
                      else if(trendType == ENUM_SA) return sa;
                      else
                      {
-                     if(sa == ENUM_BULL && (ml == ENUM_BULL || ml == ENUM_NEUTRAL))
+                     if(sa == ENUM_BULL && (mL == ENUM_BULL || mL == ENUM_NEUTRAL))
                         return ENUM_BULL;
-                     else if(sa == ENUM_BEAR && (ml == ENUM_BEAR || ml == ENUM_NEUTRAL))
+                     else if(sa == ENUM_BEAR && (mL == ENUM_BEAR || mL == ENUM_NEUTRAL))
                         return ENUM_BEAR;
                      else
                         return ENUM_NEUTRAL;
@@ -213,7 +183,7 @@ class CJBNews
    public:
       string api_key;
       bool get();                      // connects to api with your api key and loads all data
-      bool calendar(bool today=false); // connects api with your key and loads all the calendar data
+      bool calendar(bool today=false, bool this_week = false); // connects api with your key and loads all the calendar data
       bool load(const long eventID);   // sets the appropriate .info properties to the eventID's event information
       string eventNames[];             // list of all the event names
       long eventIDs[];                 // list of all the event IDs
@@ -234,15 +204,15 @@ class CJBNews
                for(d = 0; d < 250; d++)
                   if(info.isEventTime(d,currentTime)){
                      const string oc = info.outcome(d);
-                     const enum_news_trend ml = info.trendML(oc);
+                     const enum_news_trend mL = info.trendML(oc);
                      const enum_news_trend sa = info.trendSA(oc);
-                     if(trendType == ENUM_ML) return ml;
+                     if(trendType == ENUM_ML) return mL;
                      else if(trendType == ENUM_SA) return sa;
                      else
                      {
-                     if(sa == ENUM_BULL && (ml == ENUM_BULL || ml == ENUM_NEUTRAL))
+                     if(sa == ENUM_BULL && (mL == ENUM_BULL || mL == ENUM_NEUTRAL))
                         return ENUM_BULL;
-                     else if(sa == ENUM_BEAR && (ml == ENUM_BEAR || ml == ENUM_NEUTRAL))
+                     else if(sa == ENUM_BEAR && (mL == ENUM_BEAR || mL == ENUM_NEUTRAL))
                         return ENUM_BEAR;
                      else
                         return ENUM_NEUTRAL;
@@ -259,13 +229,18 @@ class CJBNews
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-bool CJBNews::calendar(bool today=false)
+bool CJBNews::calendar(bool today=false, bool this_week = false)
 { 
     if (StringLen(api_key)<30) return false;
     
     bytesRead = 0;
     result = "";
-    static const string url = "https://www.jblanked.com/news/api/calendar/";
+    
+    string url = "https://www.jblanked.com/news/api/calendar/";
+    if(today&&!this_week) url = "https://www.jblanked.com/news/api/calendar/today/";
+    else if(this_week && !today) url = "https://www.jblanked.com/news/api/calendar/week/";
+
+    
     const string headers = "Content-Type: application/json" + "\r\n" + "Authorization: Api-Key " + api_key; 
 
     // Initialize WinHTTP
@@ -311,13 +286,13 @@ bool CJBNews::calendar(bool today=false)
                   
          CJAVal temp;
          ZeroMemory(history);
+         ArrayResize(history,10000);
          for(e = 0; e < 10000; e++){
             temp = JSON[e];
-            if(!today){
+           
                if(datetime(temp["Date"].ToStr())==0)
                   break;
                else {
-                  ArrayResize(history,e+1);
                   history[e].actual = temp["Actual"].ToDbl();
                   history[e].forecast = temp["Forecast"].ToDbl();
                   history[e].previous = temp["Previous"].ToDbl();
@@ -331,35 +306,11 @@ bool CJBNews::calendar(bool today=false)
                   history[e].currency = temp["Currency"].ToStr();
                   history[e].projection = temp["Projection"].ToDbl();
                }
-            }
-            else
-            {
-               const datetime todayy = datetime(TimeToString(TimeCurrent(),TIME_DATE));
-               const datetime temp_time = datetime(TimeToString(StringToTime(temp["Date"].ToStr()),TIME_DATE));
-               if(temp_time!=todayy && temp_time<todayy){
-                  break;
-                  }
-               else if(temp_time!=todayy && temp_time>todayy){
-                  //continue;
-                  }
-               else {
-                  ArrayResize(history,e+1);
-                  history[e].actual = temp["Actual"].ToDbl();
-                  history[e].forecast = temp["Forecast"].ToDbl();
-                  history[e].previous = temp["Previous"].ToDbl();
-                  history[e].category = temp["Category"].ToStr();
-                  history[e].date = temp_time;
-                  history[e].eventID = temp["Event_ID"].ToInt();
-                  history[e].name = temp["Name"].ToStr();
-                  history[e].outcome = temp["Outcome"].ToStr();
-                  history[e].quality = temp["Quality"].ToStr();
-                  history[e].strength = temp["Strength"].ToStr();
-                  history[e].currency = temp["Currency"].ToStr();
-                  history[e].projection = temp["Projection"].ToDbl();
-               }
             
-            }
+
          }
+       
+        ArrayResize(history,e);
             
         return true;
     }

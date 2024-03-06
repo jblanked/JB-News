@@ -277,32 +277,21 @@ class CJBNews:
             )
 
     def _setCalendarList(self, json_data):
-        for event in json_data:
-            json = {
-                "Name": event["Name"],
-                "Currency": event["Currency"],
-                "Event_ID": event["Event_ID"],
-                "Category": event["Category"],
-                "Date": event["Date"],
-                "Actual": event["Actual"],
-                "Forecast": event["Forecast"],
-                "Previous": event["Previous"],
-                "Outcome": event["Outcome"],
-                "Strength": event["Strength"],
-                "Quality": event["Quality"],
-                "Projection": event["Projection"],
-            }
-            event = self._CalendarInfo
-            event.name = json["Name"]
-            event.currency = json["Currency"]
-            event.eventID = json["Event_ID"]
-            event.category = json["Category"]
-            event.date = json["Date"]
-            event.actual = json["Actual"]
-            event.forecast = json["Forecast"]
-            event.previous = json["Previous"]
-            event.outcome = json["Outcome"]
-            event.strength = json["Strength"]
-            event.quality = json["Quality"]
-            event.projection = json["Projection"]
-            self.calendar_info.append(event)
+        self.calendar_info = []
+        for data in json_data:
+            self.calendar_info.append(
+                self._CalendarInfo(
+                    name=data["Name"],
+                    currency=data["Currency"],
+                    eventID=data["Event_ID"],
+                    category=data["Category"],
+                    date=data["Date"],
+                    actual=data["Actual"],
+                    forecast=data["Forecast"],
+                    previous=data["Previous"],
+                    outcome=data["Outcome"],
+                    strength=data["Strength"],
+                    quality=data["Quality"],
+                    projection=data["Projection"],
+                )
+            )
