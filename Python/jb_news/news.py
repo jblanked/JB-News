@@ -10,8 +10,6 @@ class CJBNews:
         self.event_ids = []
         self.list = []
         self.info = self._EventInfo
-        self._machine_learning = {}
-        self._smart_analysis = {}
         self.calendar_info = []
 
     def _division(self, a: float, b: float):
@@ -218,15 +216,30 @@ class CJBNews:
     def __search(self, currency, eventID):
         for event in self.list:
             if str(event["Event_ID"]) == str(eventID):
+                try:
+                    category = event["Category"]
+                except KeyError:
+                    category = "N/A"
+                try:
+                    history = event["History"]
+                except KeyError:
+                    history = []
+                try:
+                    machineLearning = event["MachineLearning"]
+                except KeyError:
+                    machineLearning = {}
+                try:
+                    smartAnalysis = event["SmartAnalysis"]
+                except KeyError:
+                    smartAnalysis = {}
+
                 self.info.name = event["Name"]
                 self.info.currency = currency
                 self.info.eventID = event["Event_ID"]
-                self.info.category = event["Category"]
-                self.info.history = event["History"]
-                self.info.machine_learning = event["MachineLearning"]
-                self.info.smart_analysis = event["SmartAnalysis"]
-                self.machine_learning = event["MachineLearning"]
-                self.smart_analysis = event["SmartAnalysis"]
+                self.info.category = category
+                self.info.history = history
+                self.info.machine_learning = machineLearning
+                self.info.smart_analysis = smartAnalysis
                 return True
 
         return False
@@ -264,34 +277,72 @@ class CJBNews:
 
     def _setBasicList(self, events, currency):
         for event in events:
+            try:
+                category = event["Category"]
+            except KeyError:
+                category = "N/A"
+            try:
+                history = event["History"]
+            except KeyError:
+                history = []
+            try:
+                machine_learning = event["MachineLearning"]
+            except KeyError:
+                machine_learning = {}
+            try:
+                smart_analysis = event["SmartAnalysis"]
+            except KeyError:
+                smart_analysis = {}
+
             self.list.append(
                 {
                     "Name": event["Name"],
                     "Currency": currency,
                     "Event_ID": event["Event_ID"],
-                    "Category": event["Category"],
-                    "History": event["History"],
-                    "MachineLearning": event["MachineLearning"],
-                    "SmartAnalysis": event["SmartAnalysis"],
+                    "Category": category,
+                    "History": history,
+                    "MachineLearning": machine_learning,
+                    "SmartAnalysis": smart_analysis,
                 }
             )
 
     def _setCalendarList(self, json_data):
         self.calendar_info = []
         for data in json_data:
+            try:
+                category = data["Category"]
+            except KeyError:
+                category = "N/A"
+            try:
+                outcome = data["Outcome"]
+            except KeyError:
+                outcome = "N/A"
+            try:
+                strength = data["Strength"]
+            except KeyError:
+                strength = "N/A"
+            try:
+                quality = data["Quality"]
+            except KeyError:
+                quality = "N/A"
+            try:
+                projection = data["Projection"]
+            except KeyError:
+                projection = "N/A"
+
             self.calendar_info.append(
                 self._CalendarInfo(
                     name=data["Name"],
                     currency=data["Currency"],
                     eventID=data["Event_ID"],
-                    category=data["Category"],
+                    category=category,
                     date=data["Date"],
                     actual=data["Actual"],
                     forecast=data["Forecast"],
                     previous=data["Previous"],
-                    outcome=data["Outcome"],
-                    strength=data["Strength"],
-                    quality=data["Quality"],
-                    projection=data["Projection"],
+                    outcome=outcome,
+                    strength=strength,
+                    quality=quality,
+                    projection=projection,
                 )
             )
