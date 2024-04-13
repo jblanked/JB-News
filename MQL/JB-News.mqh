@@ -131,6 +131,9 @@ private:
          ObjectSetInteger(0,object_name,OBJPROP_ZORDER,0);
         }
      }
+   
+   datetime ChangeTime(datetime initial_time, int increment_by = 1);
+   int amountOfDays(int current_month, int year);
 
 
    struct HistoryInfo
@@ -887,7 +890,7 @@ void CJBNews::json_set(CJAVal & Currency, long event_total, int currency)
 
   }
 //+------------------------------------------------------------------+
-datetime ChangeTime(datetime initial_time, int increment_by = 1)
+datetime CJBNews::ChangeTime(datetime initial_time, int increment_by = 1)
 {
    MqlDateTime date; 
    TimeToStruct(initial_time, date);
@@ -927,7 +930,7 @@ datetime ChangeTime(datetime initial_time, int increment_by = 1)
 // Return the modified datetime
 return datetime(StringToTime((string)year + "." + (string)month + "." + (string)day + " " + (string)date.hour + ":" + (string)date.min + ":" + (string)date.sec));
 }
-int amountOfDays(int current_month, int year)
+int CJBNews::amountOfDays(int current_month, int year)
 {
    int amount = 0;
    
