@@ -31,6 +31,7 @@ int InternetReadFile(int, string, int, int& OneInt[]);
 
    int OnInit(){
       jb.api_key = "API_KEY";
+      jb.offset = 0;
 
       jb.chart(clrAliceBlue,clrWhite);
 
@@ -375,7 +376,7 @@ bool CJBNews::calendar(bool today=false, bool this_week = false)
             history[e].forecast = temp["Forecast"].ToDbl();
             history[e].previous = temp["Previous"].ToDbl();
             history[e].category = temp["Category"].ToStr();
-            history[e].date = datetime(temp["Date"].ToStr());
+            history[e].date = (ChangeTime(StringToTime(temp["Date"].ToStr()),offset));
             history[e].eventID = temp["Event_ID"].ToInt();
             history[e].name = temp["Name"].ToStr();
             history[e].outcome = temp["Outcome"].ToStr();
@@ -817,7 +818,7 @@ void CJBNews::json_set(CJAVal & Currency, long event_total, int currency)
             EventHistory[currency][evnt][hist][1] = EventTemp["Currency"].ToStr();
             EventHistory[currency][evnt][hist][2] = string(EventIDs[currency][evnt]);
             EventHistory[currency][evnt][hist][3] = EventCategories[currency][evnt];
-            EventHistory[currency][evnt][hist][4] = Hist2Temp["Date"].ToStr();
+            EventHistory[currency][evnt][hist][4] = TimeToString(ChangeTime(StringToTime(Hist2Temp["Date"].ToStr()),offset));
             EventHistory[currency][evnt][hist][5] = Hist2Temp["Actual"].ToStr();
             EventHistory[currency][evnt][hist][6] = Hist2Temp["Forecast"].ToStr();
             EventHistory[currency][evnt][hist][7] = Hist2Temp["Previous"].ToStr();
@@ -883,3 +884,72 @@ void CJBNews::json_set(CJAVal & Currency, long event_total, int currency)
 
   }
 //+------------------------------------------------------------------+
+datetime ChangeTime(datetime initial_time, int increment_by = 1)
+{
+   MqlDateTime date; 
+   TimeToStruct(initial_time, date);
+   
+   int year = 0, month = 0, day = 0;
+   int increase;
+   
+   year = date.year;
+   month = date.mon;
+   day = date.day;
+   
+    increase = date.hour + increment_by;
+
+    if (increase < 24)
+        date.hour = increase;
+    else {
+        date.day += increase / 24;  // Increment days by the number of complete days in 'increase'
+        date.hour = increase % 24;  // Set hour to the remainder
+
+        // Check and update the month and year if needed
+        while (date.day > amountOfDays(date.mon, date.year)) {
+            date.day -= amountOfDays(date.mon, date.year);
+            date.mon++;
+
+            if (date.mon > 12) {
+                date.mon = 1;
+                date.year++;
+            }
+        }
+
+        // Update the year, month, and day from the date structure
+        year = date.year;
+        month = date.mon;
+        day = date.day;
+    }
+
+// Return the modified datetime
+return datetime(StringToTime((string)year + "." + (string)month + "." + (string)day + " " + (string)date.hour + ":" + (string)date.min + ":" + (string)date.sec));
+}
+int amountOfDays(int current_month, int year)
+{
+   int amount = 0;
+   
+   switch(current_month)
+   {
+      case 2: amount = year % 4 == 0 ? 28 : 29; break;
+      
+      case 1:
+      case 3:
+      case 5:
+      case 7:
+      case 8:
+      case 10:
+      case 12:
+         amount = 31; 
+         break;
+      
+      case 4:
+      case 6: 
+      case 9: 
+      case 11: 
+         amount = 30;
+         break;
+   }
+   
+   return amount;
+   
+}
