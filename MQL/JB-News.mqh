@@ -31,7 +31,8 @@ int InternetReadFile(int, string, int, int& OneInt[]);
 
    int OnInit(){
       jb.api_key = "API_KEY";
-      jb.offset = 0;
+      
+      jb.offset = 0; // GMT-3 = 0, GMT = 3, EST = 7, PST = 10
 
       jb.chart(clrAliceBlue,clrWhite);
 
@@ -207,6 +208,7 @@ public:
                      CJBNews::CJBNews()   // constructor
      {
       api_key = "";
+      offset = 0;
       ObjectsDeleteAll(0,"CJBNews");
       ArrayResize(eventNames,0);
       ArrayResize(history,0);
@@ -216,6 +218,7 @@ public:
    CJBNews::        ~CJBNews() // deconstructor
      {
       api_key = "";
+      offset = 0;
       ObjectsDeleteAll(0,"CJBNews");
      }
 
