@@ -32,7 +32,10 @@ Next, set your API key and Event ID:
 
 ```python
 api_key = "YOUR_API_KEY_HERE" 
+
 event_id = 756020001 # CHF CPI
+
+jb.offset = 7  # GMT-3 = 0, GMT = 3, EST = 7, PST = 10
 ```
 
 Next step is to connect to the API by using the get method. 
