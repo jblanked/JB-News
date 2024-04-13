@@ -11,6 +11,7 @@ class CJBNews:
         self.list = []
         self.info = self._EventInfo
         self.calendar_info = []
+        self.offset = 0
 
     def _division(self, a: float, b: float):
         if b == 0:
@@ -283,6 +284,13 @@ class CJBNews:
                 category = "N/A"
             try:
                 history = event["History"]
+
+                if self.offset != 0:
+                    for item in history:
+                        item["Date"] = datetime.datetime.strptime(
+                            item["Date"], "%Y.%m.%d %H:%M:%S"
+                        ) - datetime.timedelta(hours=self.offset)
+
             except KeyError:
                 history = []
             try:
@@ -330,13 +338,20 @@ class CJBNews:
             except KeyError:
                 projection = "N/A"
 
+            if self.offset == 0:
+                date = data["Date"]
+            else:
+                date = datetime.datetime.strptime(
+                    data["Date"], "%Y.%m.%d %H:%M:%S"
+                ) - datetime.timedelta(hours=self.offset)
+
             self.calendar_info.append(
                 self._CalendarInfo(
                     name=data["Name"],
                     currency=data["Currency"],
                     eventID=data["Event_ID"],
                     category=category,
-                    date=data["Date"],
+                    date=date,
                     actual=data["Actual"],
                     forecast=data["Forecast"],
                     previous=data["Previous"],

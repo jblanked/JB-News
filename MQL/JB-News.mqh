@@ -7,7 +7,7 @@
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property description "Access JBlanked's News Library that includes Machine Learning, Auto Smart Analysis, and Event History information."
 
-// Last Update: March 5th, 2024
+// Last Update: April 13th, 2024
 
 #import "Wininet.dll"
 int InternetOpenW(string name, int config, string, string, int);
@@ -155,12 +155,13 @@ private:
       enum_news_trend trendML(const string outcome);
       enum_news_trend trendSA(const string outcome);
       string         outcome(const int iteration);
-      bool           isEventTime(const int iteration,const datetime currentTime) {return (datetime)eventHistory[iteration].date != 0 && (datetime)eventHistory[iteration].date == currentTime;}
+      bool           isEventTime(const int iteration,const datetime currentTime) { return (datetime)eventHistory[iteration].date != 0 && (datetime)eventHistory[iteration].date == currentTime; }
       string         name;
       string         currency;
       long           eventID;
       string         category;
       HistoryInfo    eventHistory[];
+      int            eventCount;
       string         machineLearning[14][10];
       string         smartAnalysis[14][2];
 
@@ -217,6 +218,7 @@ public:
       ObjectsDeleteAll(0,"CJBNews");
      }
 
+   int               offset;                    // GMT-3 = 0, GMT = 3, EST = 7, PST = 10
    string            api_key;                  // API key from www.jblanked.com/profile/
    bool              get();                      // connects to the api with your api key and loads all data
    bool              calendar(bool today=false, bool this_week = false); // connects api with your key and loads all the calendar data
@@ -238,7 +240,7 @@ public:
       */
       for(c = 0; c < ArraySize(eventIDs); c++)
          if(load(eventIDs[c]))
-            for(d = 0; d < 250; d++)
+            for(d = 0; d < info.eventCount; d++)
                if(info.isEventTime(d,currentTime))
                  {
                   const string oc = info.outcome(d);
@@ -359,9 +361,9 @@ bool CJBNews::calendar(bool today=false, bool this_week = false)
       JSON.Deserialize(result, CP_UTF8); // deserialize into JSON format
 
       CJAVal temp;
-      ZeroMemory(history);
-      ArrayResize(history,10000);
-      for(e = 0; e < 10000; e++)
+
+      ArrayResize(history,7000);
+      for(e = 0; e < 7000; e++)
         {
          temp = JSON[e];
 
@@ -383,10 +385,9 @@ bool CJBNews::calendar(bool today=false, bool this_week = false)
             history[e].projection = temp["Projection"].ToDbl();
            }
 
-
         }
 
-      ArrayResize(history,e);
+      ArrayResize(history,e+1);
 
       return true;
      }
@@ -528,7 +529,7 @@ string CJBNews::EventInfo:: outcome(const int iteration)
 //+------------------------------------------------------------------+
 void CJBNews::eventList(long & destination_list[])
   {
-   ZeroMemory(destination_list);
+   ArrayResize(destination_list,5000);
    place = 0;
 
    for(c = 0; c < 8; c++)
@@ -536,11 +537,12 @@ void CJBNews::eventList(long & destination_list[])
       for(d = 0; d < 60; d++)
          if(EventIDs[c][d] !=  NULL)
            {
-            ArrayResize(destination_list,ArraySize(destination_list)+1);
             destination_list[place] = EventIDs[c][d];
             place++;
            }
      }
+     
+   ArrayResize(destination_list,c+d+1);
 
   }
 //+------------------------------------------------------------------+
@@ -548,19 +550,21 @@ void CJBNews::eventList(long & destination_list[])
 //+------------------------------------------------------------------+
 void CJBNews::eventList(string & destination_list[])
   {
-   ZeroMemory(destination_list);
+   ArrayResize(destination_list,5000);
    place = 0;
 
    for(c = 0; c < 8; c++)
      {
-      for(d = 0; d < 60; d++)
+      for(d = 0; d < 60; d++){
          if(EventNames[c][d] !=  NULL)
            {
-            ArrayResize(destination_list,ArraySize(destination_list)+1);
             destination_list[place] = EventNames[c][d];
             place++;
            }
+       }
      }
+   
+   ArrayResize(destination_list,c+d+1);
 
   }
 //+------------------------------------------------------------------+
@@ -568,6 +572,10 @@ void CJBNews::eventList(string & destination_list[])
 //+------------------------------------------------------------------+
 bool CJBNews::load(long eventID)
   {
+  
+  ArrayResize(info.eventHistory,250);
+  info.eventCount = 0;
+  
    for(a = 0; a < 8; a++)
       for(l = 0; l < 60; l++)
          if(EventIDs[a][l] == eventID)
@@ -577,13 +585,13 @@ bool CJBNews::load(long eventID)
             info.currency = EventCurrencies[a];
             info.eventID = EventIDs[a][l];
             info.category = EventCategories[a][l];
-
-            ZeroMemory(info.eventHistory);
+            
             for(hist = 0; hist < 250; hist++)
               {
-               if(int(EventHistory[a][l][hist][1]) != 0)
+               if((EventHistory[a][l][hist][0]) != "")
                  {
-                  ArrayResize(info.eventHistory,hist+1);
+                  info.eventCount++;
+
                   info.eventHistory[hist].name = EventHistory[a][l][hist][0];
                   info.eventHistory[hist].currency = EventHistory[a][l][hist][1];
                   info.eventHistory[hist].eventID = long(EventHistory[a][l][hist][2]);
@@ -617,11 +625,10 @@ bool CJBNews::load(long eventID)
                info.smartAnalysis[b][0] = SmartAnalysis[a][l][b][0];
                info.smartAnalysis[b][1] = SmartAnalysis[a][l][b][1];
               }
-
-
+            ArrayResize(info.eventHistory,info.eventCount);
             return true;
            }
-
+   ArrayResize(info.eventHistory,info.eventCount);
    return false;
   }
 //+------------------------------------------------------------------+
@@ -678,7 +685,6 @@ bool CJBNews::get()
    if(result != "")
      {
       JSON.Deserialize(result, CP_UTF8); // deserialize into JSON format
-
 
 
       //--- Setting USD events
@@ -800,16 +806,17 @@ void CJBNews::json_set(CJAVal & Currency, long event_total, int currency)
       //--- Event History
       HistTemp = EventTemp["History"];
 
-
       for(hist = 0; hist < 250; hist++)
         {
          Hist2Temp = HistTemp[hist];
-         if(Hist2Temp["Date"].ToInt() != 0)
+
+         if(Hist2Temp["Date"].ToStr() != "")
            {
-            EventHistory[currency][evnt][hist][0] = Hist2Temp["Name"].ToStr();
-            EventHistory[currency][evnt][hist][1] = Hist2Temp["Currency"].ToStr();
-            EventHistory[currency][evnt][hist][2] = Hist2Temp["Event_ID"].ToStr();
-            EventHistory[currency][evnt][hist][3] = Hist2Temp["Category"].ToStr();
+
+            EventHistory[currency][evnt][hist][0] = EventNames[currency][evnt];
+            EventHistory[currency][evnt][hist][1] = EventTemp["Currency"].ToStr();
+            EventHistory[currency][evnt][hist][2] = string(EventIDs[currency][evnt]);
+            EventHistory[currency][evnt][hist][3] = EventCategories[currency][evnt];
             EventHistory[currency][evnt][hist][4] = Hist2Temp["Date"].ToStr();
             EventHistory[currency][evnt][hist][5] = Hist2Temp["Actual"].ToStr();
             EventHistory[currency][evnt][hist][6] = Hist2Temp["Forecast"].ToStr();
