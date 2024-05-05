@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import requests
 import datetime
+import time
 
 
 class CJBNews:
@@ -361,3 +362,32 @@ class CJBNews:
                     projection=projection,
                 )
             )
+
+    def GPT(self, api_key, message) -> str:
+        url = "https://www.jblanked.com/news/api/gpt/"
+        if len(api_key) < 30:
+            print("Error: Invalid API Key")
+            return "Error: Invalid API Key"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Api-Key {api_key}",
+        }
+        data = {"content": message}
+        response = requests.post(url, headers=headers, json=data)
+
+        if response.status_code == 200:
+            task_id = response.json()["task_id"]
+            print("Task started..")
+            # Check if task is complete every 2 seconds
+            while True:
+                new_response = requests.get(f"{url}status/{task_id}/", headers=headers)
+                json_data = new_response.json()  # Should return a dictionary
+                if json_data.get("status") == "completed":
+                    return json_data.get("message")
+                else:
+                    print("Task processing..")
+                    time.sleep(2)
+        else:
+            json_data = response.json()
+            print(json_data)
+            return json_data

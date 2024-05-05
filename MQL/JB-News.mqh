@@ -235,6 +235,7 @@ public:
    EventInfo         info;                  // holds the event info after loading
    HistoryInfo       history[];           // holds the history info after loading the calendar
    void              chart(const color colorOfLine, const color colorOfText); // displays this weeks history on the chart
+   string            GPT(const string message); // query the NewsGPT
 
    enum_news_trend   CJBNews::runAll(const datetime currentTime,enum_ml_sa trendType = ENUM_ML_SA) // EA trading staregy
      {
@@ -958,4 +959,97 @@ int CJBNews::amountOfDays(int current_month, int year)
    
    return amount;
    
+}
+
+string CJBNews::GPT(const string message)
+{
+   if(StringLen(api_key)<30)
+      return "Invalid API Key";
+
+   bytesRead = 0;
+   result = "";
+    
+   //--- serialize to string 
+    result = "";
+    char data[]; 
+    JSON["content"] = message;
+    ArrayResize(data, StringToCharArray(JSON.Serialize(), data, 0, WHOLE_ARRAY) - 1);
+    
+    static const string gptUrl = "https://www.jblanked.com/news/api/gpt/";
+    const string headers = "Content-Type: application/json" + "\r\n" + "Authorization: Api-Key " + api_key;
+    
+    //--- send data
+    char res_data[];
+    string res_headers = NULL;
+    int r = WebRequest("POST", gptUrl, headers, 5000, data, res_data, res_headers);
+    
+    if (r != -1)
+    {
+        result = CharArrayToString(res_data, 0, -1, CP_UTF8); 
+        
+        if (StringLen(result) > 0){
+            JSON.Clear();
+            JSON.Deserialize(result, CP_UTF8);
+            } 
+             
+       const string task_id = JSON["task_id"].ToStr();
+       
+       
+       // run get request with wait
+       Sleep(10000); // Sleep 10 seconds to give the server time to load
+       // Initialize WinHTTP
+   const int hInternet = InternetOpenW("MyApp", 1, NULL, NULL, 0);
+   if(hInternet)
+     {
+      // Open a URL
+      const int hUrl = InternetOpenUrlW(hInternet, (gptUrl + "status/" + task_id + "/"), NULL, 0, 0, 0);
+      if(hUrl)
+        {
+         // Send the request headers
+         if(HttpSendRequestW(hUrl, headers, StringLen(headers), buffer, 0))
+           {
+            // Read the response
+            while(InternetReadFile(hUrl, buffer, ArraySize(buffer) - 1, bytesRead) && bytesRead > 0)
+              {
+               buffer[bytesRead] = 0; // Null-terminate the buffer
+               result += CharArrayToString(buffer, 0, bytesRead, CP_UTF8); // Append the data to the result string
+              }
+           }
+         else
+           {
+            return "Error sending the request headers";
+           }
+
+         InternetCloseHandle(hUrl); // Close the request handle
+
+         InternetCloseHandle(hUrl); // Close the URL handle
+        }
+      else
+        {
+         return "Error opening the internet";
+        }
+      InternetCloseHandle(hInternet); // Close the WinHTTP handle
+     }
+   else
+     {
+      return "Error initializing WinHTTP";
+     }
+
+   if(result != "")
+     {
+     JSON.Deserialize(result,CP_UTF8);
+     return JSON["message"].ToStr();    
+     }
+     else
+     {
+      return "Error... response returned nothing.";
+     }
+       
+       
+    }
+    else 
+    {
+    MessageBox("Add the address 'https://www.jblanked.com/'  to the list of allowed URLs on tab 'Expert Advisors'","Error",MB_ICONINFORMATION); 
+    return "Error occured..";
+    }
 }

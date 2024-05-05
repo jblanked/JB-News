@@ -32,7 +32,10 @@ Next, set your API key and Event ID:
 
 ```python
 api_key = "YOUR_API_KEY_HERE" 
+
 event_id = 756020001 # CHF CPI
+
+jb.offset = 7  # GMT-3 = 0, GMT = 3, EST = 7, PST = 10
 ```
 
 Next step is to connect to the API by using the get method. 
@@ -74,3 +77,11 @@ if jb.calendar(api_key,today=True):
 
         # print the calendar info
         print(f"Event Name: {name}\nEvent ID: {event_id}\nCurrency: {currency}\nDate: {date}\nActual: {actual}\nForecast: {forecast}\nPrevious: {previous}")
+```
+
+You can also access our NewsGPT model:
+
+```python
+gpt_response = jb.GPT(api_key,"What does bullish mean in forex?")
+print(gpt_response)
+```
