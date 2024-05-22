@@ -163,11 +163,11 @@ class CJBNews:
 
     def calendar(self, api_key, today=False, this_week=False) -> bool:
         if today and not this_week:
-            url = "https://www.jblanked.com/news/api/calendar/today/"
+            url = "https://www.jblanked.com/news/api/mql5/calendar/today/"
         elif this_week and not today:
-            url = "https://www.jblanked.com/news/api/calendar/week/"
+            url = "https://www.jblanked.com/news/api/mql5/calendar/week/"
         else:
-            url = "https://www.jblanked.com/news/api/calendar/"
+            url = "https://www.jblanked.com/news/api/mql5/calendar/"
 
         if len(api_key) < 30:
             print("Error: Invalid API Key")
@@ -188,7 +188,7 @@ class CJBNews:
             return False
 
     def get(self, api_key) -> bool:
-        url = "https://www.jblanked.com/news/api/full-list/"
+        url = "https://www.jblanked.com/news/api/mql5/full-list/"
         if len(api_key) < 30:
             print("Error: Invalid API Key")
             return False
@@ -385,8 +385,8 @@ class CJBNews:
                 if json_data.get("status") == "completed":
                     return json_data.get("message")
                 else:
-                    print("Task processing..")
-                    time.sleep(2)
+                    print("Task processing...")
+                    time.sleep(1)
         else:
             json_data = response.json()
             print(json_data)

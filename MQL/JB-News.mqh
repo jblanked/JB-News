@@ -7,7 +7,7 @@
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property description "Access JBlanked's News Library that includes Machine Learning, Auto Smart Analysis, and Event History information."
 
-// Last Update: April 13th, 2024
+// Last Update: May 22nd, 2024
 
 #import "Wininet.dll"
 int InternetOpenW(string name, int config, string, string, int);
@@ -316,12 +316,12 @@ bool CJBNews::calendar(bool today=false, bool this_week = false)
    bytesRead = 0;
    result = "";
 
-   string url = "https://www.jblanked.com/news/api/calendar/";
+   string url = "https://www.jblanked.com/news/api/mql5/calendar/";
    if(today&&!this_week)
-      url = "https://www.jblanked.com/news/api/calendar/today/";
+      url = "https://www.jblanked.com/news/api/mql5/calendar/today/";
    else
       if(this_week && !today)
-         url = "https://www.jblanked.com/news/api/calendar/week/";
+         url = "https://www.jblanked.com/news/api/mql5/calendar/week/";
 
 
    const string headers = "Content-Type: application/json" + "\r\n" + "Authorization: Api-Key " + api_key;
@@ -649,7 +649,7 @@ bool CJBNews::get()
 
    bytesRead = 0;
    result = "";
-   static const string url = "https://www.jblanked.com/news/api/full-list/";
+   static const string url = "https://www.jblanked.com/news/api/mql5/full-list/";
    const string headers = "Content-Type: application/json" + "\r\n" + "Authorization: Api-Key " + api_key;
 
 // Initialize WinHTTP
