@@ -1,6 +1,17 @@
 import Dispatch
 import Foundation
 
+/*
+    JBNews is a Swift package that provides an easy-to-use interface for fetching economic news data from the JBlanked API. It provides the following features:
+    - Fetching economic news data for today or the current week
+    - Fetching economic news data for a specific currency
+    - Fetching detailed information about a specific news event
+
+    .get() - Fetches the full list of economic news data
+    .calendar(today: Bool, thisWeek: Bool) - Fetches economic news data for today or the current week
+    .loadEventData(eventID: Int) - Fetches detailed information about a specific news event (after calling .get()
+*/
+
 public class JBNews {
 
   var apiKey: String = ""
@@ -99,7 +110,13 @@ public class JBNews {
   {
      if self.newsEvents.count == 0
      {
-     	return NewsEvent(id: UUID(), Name: "", Currency: "", Event_ID: 0, SmartAnalysis: AnalysisData(), History: [HistoryData()], MachineLearning: MachinLearnData())
+     	self.get()
+
+        if self.newsEvents.count == 0
+        {
+        	return NewsEvent(id: UUID(), Name: "", Currency: "", Event_ID: 0, SmartAnalysis: AnalysisData(), History: [HistoryData()], MachineLearning: MachinLearnData())
+        }
+        
      }
      
         for item in self.newsEvents
