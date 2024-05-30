@@ -6,12 +6,20 @@ public class JBNews {
   var apiKey: String = ""
   var history: [HistoryData] = []
   var basicInfo: [NewsInfoBasic] = []
+  var data: NewsData = NewsData()
 
   public init(_ apiKey: String) {
     self.apiKey = apiKey
   }
 
   public func get() async -> NewsData {
+  
+  	if !self.correctKey()
+  	{
+  		print("Incorrect API Key")
+        return NewsData()
+  	}
+  	
     // set url
     if let url = URL(string: "https://www.jblanked.com/news/api/mql5/full-list/") {
 
@@ -30,9 +38,11 @@ public class JBNews {
         var newsList = try decoder.decode(NewsData2.self, from: dataReturned)
 
         updateCurrencies(&newsList)
+        
+		let updatedList = updateNewsData(newsData2: newsList)
+		self.data = updatedList
 
-
-        return updateNewsData(newsData2: newsList)
+        return updatedList
         
       } catch {
         print("Error has occurred: \(error)")
@@ -46,6 +56,12 @@ public class JBNews {
   }
 
   public func calendar(today: Bool = false, thisWeek: Bool = false) async -> [HistoryData] {
+  
+  if !self.correctKey()
+  	{
+  		print("Incorrect API Key")
+        return [HistoryData()]
+  	}
     // set url
     var urlStr: String =
       thisWeek && !today
@@ -75,6 +91,12 @@ public class JBNews {
     }
 
     return [HistoryData()]
+  }
+  
+  
+  private func correctKey() -> Bool
+  {
+  	return self.apiKey.count > 28
   }
 
   private func processCurrencyEvents(events: inout [NewsEvent2], currency: String) {
