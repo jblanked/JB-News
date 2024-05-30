@@ -70,13 +70,6 @@ public class JBNews {
     
 }
 
-//
-//  NewsData.swift
-//  JBlanked.com
-//
-//  Created by user on 11/30/23.
-//
-
 public struct NewsInfo: Decodable,Identifiable
 {
     let id = UUID()
