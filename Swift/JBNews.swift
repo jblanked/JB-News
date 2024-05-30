@@ -4,10 +4,11 @@ import Foundation
 import Dispatch
 
 public class JBNews {
-    public static let shared = JBNews()
+
     var apiKey: String = ""
     var data: [NewsData] = []
-    private init(apiKey: String = "") {
+    
+    public init(apiKey: String) {
         self.apiKey = apiKey
     }
 
@@ -29,6 +30,7 @@ public class JBNews {
                 // 4. Parse the JSON
                 let decoder = JSONDecoder()
                 let newsList = try decoder.decode([NewsData].self, from: dataReturned)
+                self.data = newsList
                 
                 return newsList
 
@@ -37,9 +39,8 @@ public class JBNews {
             }
 
         }
-
-        return [NewsData()]
         
+        return [NewsData()]
     }
 
     func calendar(today: Bool = false, thisWeek: Bool = false) async -> [HistoryData] {
@@ -78,7 +79,7 @@ public struct NewsInfo: Decodable,Identifiable
     public let id = UUID()
     var Name:String
     var Currency:String
-    var ID:Int
+    var Event_ID:Int
 }
 
 public struct NewsData:Decodable,Identifiable
