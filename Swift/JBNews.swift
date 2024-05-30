@@ -7,6 +7,8 @@ public class JBNews {
   var history: [HistoryData] = []
   var basicInfo: [NewsInfoBasic] = []
   var data: NewsData = NewsData()
+  var newsEvents: [NewsEvent] = []
+
 
   public init(_ apiKey: String) {
     self.apiKey = apiKey
@@ -93,6 +95,24 @@ public class JBNews {
     return [HistoryData()]
   }
   
+  public func loadEventData(eventID: Int) -> NewsEvent
+  {
+     if self.newsEvents.count == 0
+     {
+     	return NewsEvent(id: UUID(), Name: "", Currency: "", Event_ID: 0, SmartAnalysis: AnalysisData(), History: [HistoryData()], MachineLearning: MachinLearnData())
+     }
+     
+        for item in self.newsEvents
+        {
+        	if item.Event_ID == eventID
+        	{
+        		return item
+        	}
+        }
+        
+        return NewsEvent(id: UUID(), Name: "", Currency: "", Event_ID: 0, SmartAnalysis: AnalysisData(), History: [HistoryData()], MachineLearning: MachinLearnData())
+  }
+  
   
   private func correctKey() -> Bool
   {
@@ -113,6 +133,7 @@ public class JBNews {
       events[i] = item  // Assign the modified copy back to the array
       
       self.basicInfo.append(NewsInfoBasic(Name: item.Name, Currency: currency, Event_ID: item.Event_ID))
+    self.newsEvents.append(NewsEvent(id: UUID(), Name: item.Name, Currency: currency, Event_ID: item.Event_ID, SmartAnalysis: item.SmartAnalysis, History: item.History, MachineLearning: item.MachineLearning))
     }
   }
 
@@ -282,6 +303,19 @@ public struct NewsEvent: Decodable, Identifiable {
     self.History = History
     self.MachineLearning = MachineLearning
   }
+  
+  public init()
+  {
+  	self.id = UUID()
+    self.Name = ""
+    self.Currency = ""
+    self.Event_ID = 0
+    self.SmartAnalysis = AnalysisData()
+    self.History = [HistoryData()]
+    self.MachineLearning = MachinLearnData()
+  }
+  
+  
 }
 
 public struct NewsEventSet: Decodable, Identifiable {
