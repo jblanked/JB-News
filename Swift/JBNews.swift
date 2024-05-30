@@ -20,19 +20,17 @@ public class JBNews {
   var data: NewsData = NewsData()
   var newsEvents: [NewsEvent] = []
 
-
   public init(_ apiKey: String) {
     self.apiKey = apiKey
   }
 
   public func get() async -> NewsData {
-  
-  	if !self.correctKey()
-  	{
-  		print("Incorrect API Key")
-        return NewsData()
-  	}
-  	
+
+    if !self.correctKey() {
+      print("Incorrect API Key")
+      return NewsData()
+    }
+
     // set url
     if let url = URL(string: "https://www.jblanked.com/news/api/mql5/full-list/") {
 
@@ -51,12 +49,12 @@ public class JBNews {
         var newsList = try decoder.decode(NewsData2.self, from: dataReturned)
 
         updateCurrencies(&newsList)
-        
-		let updatedList = updateNewsData(newsData2: newsList)
-		self.data = updatedList
+
+        let updatedList = updateNewsData(newsData2: newsList)
+        self.data = updatedList
 
         return updatedList
-        
+
       } catch {
         print("Error has occurred: \(error)")
         return NewsData()
@@ -69,12 +67,11 @@ public class JBNews {
   }
 
   public func calendar(today: Bool = false, thisWeek: Bool = false) async -> [HistoryData] {
-  
-  if !self.correctKey()
-  	{
-  		print("Incorrect API Key")
-        return [HistoryData()]
-  	}
+
+    if !self.correctKey() {
+      print("Incorrect API Key")
+      return [HistoryData()]
+    }
     // set url
     var urlStr: String =
       thisWeek && !today
@@ -105,35 +102,35 @@ public class JBNews {
 
     return [HistoryData()]
   }
-  
-  public func loadEventData(eventID: Int) -> NewsEvent
-  {
-     if self.newsEvents.count == 0
-     {
-     	self.get()
 
-        if self.newsEvents.count == 0
-        {
-        	return NewsEvent(id: UUID(), Name: "", Currency: "", Event_ID: 0, SmartAnalysis: AnalysisData(), History: [HistoryData()], MachineLearning: MachinLearnData())
-        }
-        
-     }
-     
-        for item in self.newsEvents
-        {
-        	if item.Event_ID == eventID
-        	{
-        		return item
-        	}
-        }
-        
-        return NewsEvent(id: UUID(), Name: "", Currency: "", Event_ID: 0, SmartAnalysis: AnalysisData(), History: [HistoryData()], MachineLearning: MachinLearnData())
+  public func loadEventData(eventID: Int) -> NewsEvent {
+    if self.newsEvents.count == 0 {
+
+      Task {
+        await self.get()
+      }
+
+      if self.newsEvents.count == 0 {
+        return NewsEvent(
+          id: UUID(), Name: "", Currency: "", Event_ID: 0, SmartAnalysis: AnalysisData(),
+          History: [HistoryData()], MachineLearning: MachinLearnData())
+      }
+
+    }
+
+    for item in self.newsEvents {
+      if item.Event_ID == eventID {
+        return item
+      }
+    }
+
+    return NewsEvent(
+      id: UUID(), Name: "", Currency: "", Event_ID: 0, SmartAnalysis: AnalysisData(),
+      History: [HistoryData()], MachineLearning: MachinLearnData())
   }
-  
-  
-  private func correctKey() -> Bool
-  {
-  	return self.apiKey.count > 28
+
+  private func correctKey() -> Bool {
+    return self.apiKey.count > 28
   }
 
   private func processCurrencyEvents(events: inout [NewsEvent2], currency: String) {
@@ -143,15 +140,29 @@ public class JBNews {
       // Append the history data to a global mutable array `history` defined elsewhere in the class
       for hist in item.History {
         self.history.append(hist)
-        
+
       }
 
       item.Currency = currency  // Update the currency
       events[i] = item  // Assign the modified copy back to the array
-      
-      self.basicInfo.append(NewsInfoBasic(Name: item.Name, Currency: currency, Event_ID: item.Event_ID))
-    self.newsEvents.append(NewsEvent(id: UUID(), Name: item.Name, Currency: currency, Event_ID: item.Event_ID, SmartAnalysis: item.SmartAnalysis, History: item.History, MachineLearning: item.MachineLearning))
+
+      self.basicInfo.append(
+        NewsInfoBasic(Name: item.Name, Currency: currency, Event_ID: item.Event_ID))
+      self.newsEvents.append(
+        NewsEvent(
+          id: UUID(), Name: item.Name, Currency: currency, Event_ID: item.Event_ID,
+          SmartAnalysis: item.SmartAnalysis, History: item.History,
+          MachineLearning: item.MachineLearning))
     }
+
+    // order self.history by date
+    self.history.sort { $0.Date < $1.Date }
+
+    // order self.basicInfo by Name
+    self.basicInfo.sort { $0.Name < $1.Name }
+
+    // order self.newsEvents by Name
+    self.newsEvents.sort { $0.Name < $1.Name }
   }
 
   private func updateCurrencies(_ newsData: inout NewsData2) {
@@ -201,62 +212,60 @@ public class JBNews {
       NZD: convertEventSet(eventSet2: newsData2.NZD)
     )
   }
-  
+
   private struct NewsData2: Decodable, Identifiable {
-  public let id = UUID()
-  var USD: NewsEventSet2
-  var EUR: NewsEventSet2
-  var GBP: NewsEventSet2
-  var JPY: NewsEventSet2
-  var AUD: NewsEventSet2
-  var CAD: NewsEventSet2
-  var CHF: NewsEventSet2
-  var NZD: NewsEventSet2
+    public let id = UUID()
+    var USD: NewsEventSet2
+    var EUR: NewsEventSet2
+    var GBP: NewsEventSet2
+    var JPY: NewsEventSet2
+    var AUD: NewsEventSet2
+    var CAD: NewsEventSet2
+    var CHF: NewsEventSet2
+    var NZD: NewsEventSet2
 
-  public init() {
-    self.USD = NewsEventSet2()
-    self.EUR = NewsEventSet2()
-    self.GBP = NewsEventSet2()
-    self.JPY = NewsEventSet2()
-    self.AUD = NewsEventSet2()
-    self.CAD = NewsEventSet2()
-    self.CHF = NewsEventSet2()
-    self.NZD = NewsEventSet2()
+    public init() {
+      self.USD = NewsEventSet2()
+      self.EUR = NewsEventSet2()
+      self.GBP = NewsEventSet2()
+      self.JPY = NewsEventSet2()
+      self.AUD = NewsEventSet2()
+      self.CAD = NewsEventSet2()
+      self.CHF = NewsEventSet2()
+      self.NZD = NewsEventSet2()
+    }
   }
-}
 
-private struct NewsEventSet2: Decodable, Identifiable {
-  public let id = UUID()
-  var Events: [NewsEvent2]
-  var Total: Int
+  private struct NewsEventSet2: Decodable, Identifiable {
+    public let id = UUID()
+    var Events: [NewsEvent2]
+    var Total: Int
 
-  public init() {
-    self.Events = [NewsEvent2()]
-    self.Total = 0
+    public init() {
+      self.Events = [NewsEvent2()]
+      self.Total = 0
+    }
   }
-}
 
-private struct NewsEvent2: Decodable, Identifiable {
-  public let id = UUID()
-  var Name: String
-  var Currency: String?
-  var Event_ID: Int
-  var SmartAnalysis: AnalysisData
-  var History: [HistoryData]
-  var MachineLearning: MachinLearnData
+  private struct NewsEvent2: Decodable, Identifiable {
+    public let id = UUID()
+    var Name: String
+    var Currency: String?
+    var Event_ID: Int
+    var SmartAnalysis: AnalysisData
+    var History: [HistoryData]
+    var MachineLearning: MachinLearnData
 
-  public init() {
-    self.Name = ""
-    self.Currency = ""
-    self.Event_ID = 0
-    self.SmartAnalysis = AnalysisData()
-    self.History = [HistoryData()]
-    self.MachineLearning = MachinLearnData()
+    public init() {
+      self.Name = ""
+      self.Currency = ""
+      self.Event_ID = 0
+      self.SmartAnalysis = AnalysisData()
+      self.History = [HistoryData()]
+      self.MachineLearning = MachinLearnData()
 
-  }  // use default values
-}
-
-
+    }  // use default values
+  }
 
 }
 
@@ -320,10 +329,9 @@ public struct NewsEvent: Decodable, Identifiable {
     self.History = History
     self.MachineLearning = MachineLearning
   }
-  
-  public init()
-  {
-  	self.id = UUID()
+
+  public init() {
+    self.id = UUID()
     self.Name = ""
     self.Currency = ""
     self.Event_ID = 0
@@ -331,8 +339,7 @@ public struct NewsEvent: Decodable, Identifiable {
     self.History = [HistoryData()]
     self.MachineLearning = MachinLearnData()
   }
-  
-  
+
 }
 
 public struct NewsEventSet: Decodable, Identifiable {
@@ -353,7 +360,6 @@ public struct NewsEventSet: Decodable, Identifiable {
     self.Total = 0
   }
 }
-
 
 public struct HistoryData: Decodable, Hashable {
   var Date: String
