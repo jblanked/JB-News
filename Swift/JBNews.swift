@@ -1,4 +1,4 @@
-// The Swift Programming Language
+=// The Swift Programming Language
 // https://docs.swift.org/swift-book
 import Foundation
 import Dispatch
@@ -8,7 +8,7 @@ public class JBNews {
     var apiKey: String = ""
     var data: [NewsData] = []
     
-    public init(apiKey: String) {
+    public init(_ apiKey: String) {
         self.apiKey = apiKey
     }
 
