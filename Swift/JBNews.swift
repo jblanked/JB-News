@@ -5,6 +5,7 @@ import Dispatch
 
 public class JBNews {
     public static let shared = JBNews()
+    var apiKey: String = ""
     private init(apiKey: String = "") {
         self.apiKey = apiKey
     }
@@ -72,7 +73,7 @@ public class JBNews {
 
 public struct NewsInfo: Decodable,Identifiable
 {
-    let id = UUID()
+    public let id = UUID()
     var Name:String
     var Currency:String
     var ID:Int
@@ -80,7 +81,7 @@ public struct NewsInfo: Decodable,Identifiable
 
 public struct NewsData:Decodable,Identifiable
 {
-    let id = UUID()
+    public let id = UUID()
     var Name:String
     var Currency:String
     var Event_ID:Int
