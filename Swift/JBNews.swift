@@ -6,11 +6,12 @@ import Dispatch
 public class JBNews {
     public static let shared = JBNews()
     var apiKey: String = ""
+    var data: [NewsData] = []
     private init(apiKey: String = "") {
         self.apiKey = apiKey
     }
 
-    func get() async -> [NewsInfo] {
+    func get() async -> [NewsData] {
         // set url
         if let url = URL(string: "https://www.jblanked.com/news/api/mql5/full-list/")
         {
@@ -27,7 +28,7 @@ public class JBNews {
             
                 // 4. Parse the JSON
                 let decoder = JSONDecoder()
-                let newsList = try decoder.decode([NewsInfo].self, from: dataReturned)
+                let newsList = try decoder.decode([NewsData].self, from: dataReturned)
                 
                 return newsList
 
@@ -36,8 +37,9 @@ public class JBNews {
             }
 
         }
+
+        return [NewsData()]
         
-        return [NewsInfo(Name: "Test", Currency: "USD", ID: 0)]
     }
 
     func calendar(today: Bool = false, thisWeek: Bool = false) async -> [HistoryData] {
