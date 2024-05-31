@@ -10,6 +10,24 @@ import Foundation
     .get() - Fetches the full list of economic news data
     .calendar(today: Bool, thisWeek: Bool) - Fetches economic news data for today or the current week
     .loadEventData(eventID: Int) - Fetches detailed information about a specific news event (after calling .get()
+    .gpt(message: String) - Fetches a response from our News GPT model for a given message
+    .gpt_post(message: String) - Posts a message to our News GPT model and returns a task ID
+    .gpt_get(taskID: String) - Fetches the response from our News GPT model for a given task ID
+
+    Example of accessing our GPT:
+
+
+    let yourAPIKey: String = "YOUR-API-KEY"
+    let newsModel = JBNews(yourAPIKey)
+
+    Task {
+        let messageResponse: String = await newsModel.gpt(message: "In less than 8 words, what does bullish mean?")
+        print(messageResponse)
+    }
+
+
+    - View the Full documentation: https://www.jblanked.com/news/api/docs/
+    - Explore our GitHub repository: https://github.com/jblanked/JB-News
 */
 
 public class JBNews {
