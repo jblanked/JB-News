@@ -128,6 +128,24 @@ public class JBNews {
       id: UUID(), Name: "", Currency: "", Event_ID: 0, SmartAnalysis: AnalysisData(),
       History: [HistoryData()], MachineLearning: MachinLearnData())
   }
+
+  public func gpt(message: String) async -> String
+  {
+    let taskID = await self.gpt_post(message: message)
+
+    if taskID == "" {
+      return ""
+    }
+
+    // check every 1 second
+    while true {
+      let response = await self.gpt_get(taskID: taskID)
+      if response != "" && response != "Task is still processing" {
+        return response
+      }
+      await Task.sleep(1_000_000_000)
+    }
+  }
   
   public func gpt_post(message: String) async -> String
   {
@@ -160,7 +178,7 @@ public class JBNews {
       return ""
     }
 
-    if let url = URL(string: "https://www.jblanked.com/news/api/gpt/status/\(taskID)") {
+    if let url = URL(string: "https://www.jblanked.com/news/api/gpt/status/\(taskID)/") {
       var request = URLRequest(url: url)
       request.addValue("Api-Key \(API_KEY)", forHTTPHeaderField: "Authorization")
       request.addValue("application/json", forHTTPHeaderField: "Content-Type")
