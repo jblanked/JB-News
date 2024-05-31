@@ -128,6 +128,70 @@ public class JBNews {
       id: UUID(), Name: "", Currency: "", Event_ID: 0, SmartAnalysis: AnalysisData(),
       History: [HistoryData()], MachineLearning: MachinLearnData())
   }
+  
+  public func gpt_post(message: String) async -> String
+  {
+    let baseURL: String = "https://www.jblanked.com/news/api/gpt/mobile/"
+    var components = URLComponents(string: baseURL)
+    components?.queryItems = [
+      URLQueryItem(name: "message", value: message)
+    ]
+    if let url = components?.url {
+      var request = URLRequest(url: url)
+      request.addValue("Api-Key \(API_KEY)", forHTTPHeaderField: "Authorization")
+      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+
+      do {
+        let (dataReturned, _) = try await URLSession.shared.data(for: request)
+        let decoder = JSONDecoder()
+        let response = try decoder.decode(GPTResponsePost.self, from: dataReturned)
+        
+        return response.task_id
+      } catch {
+        print("Error has occurred: \(error)")
+      }
+    }
+    return ""
+  }
+  public func gpt_get(taskID: String) async -> String
+  {
+    if taskID == "" {
+    print("Task ID is empty")
+      return ""
+    }
+
+    if let url = URL(string: "https://www.jblanked.com/news/api/gpt/status/\(taskID)") {
+      var request = URLRequest(url: url)
+      request.addValue("Api-Key \(API_KEY)", forHTTPHeaderField: "Authorization")
+      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+
+      do {
+        let (dataReturned, responsee) = try await URLSession.shared.data(for: request)
+        let decoder = JSONDecoder()
+        let response = try decoder.decode(GPTResponse.self, from: dataReturned)
+
+        return response.message
+      } catch {
+        print("Error has occurred: \(error)")
+      }
+
+    
+    }
+    
+    return ""
+
+  }
+  
+  private struct GPTResponsePost: Decodable {
+    var task_id: String
+    var message: String
+  } 
+
+  private struct GPTResponse: Decodable {
+    var status: String
+    var message: String
+  } 
+  
 
   private func correctKey() -> Bool {
     return self.apiKey.count > 28
