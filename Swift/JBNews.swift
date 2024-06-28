@@ -84,7 +84,7 @@ public class JBNews {
 
   }
 
-  public func calendar(today: Bool = false, thisWeek: Bool = false) async -> [HistoryData] {
+  public func calendar(today: Bool = true, thisWeek: Bool = false) async -> [HistoryData] {
 
     if !self.correctKey() {
       print("Incorrect API Key")

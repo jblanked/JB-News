@@ -26,7 +26,7 @@ int InternetReadFile(int, string, int, int& OneInt[]);
 
 /*
    Example use:
-
+  #include <JB-News.mqh>
   CJBNews *jb = new CJBNews();
 
    int OnInit(){

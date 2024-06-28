@@ -1,20 +1,21 @@
 # JB-News
 
-This library is a comprehensive wrapper for JBlanked's News API. It leverages the power of OpenAI, Machine Learning, and MQL5's Calendar to provide developers with easy access to news data across all computer languages, including MQL4 and Python.
+This library is a comprehensive wrapper for JBlanked's News API. It leverages the power of OpenAI, Machine Learning, and MQL5's Calendar to provide developers with easy access to news data across all computer languages, including MQL4 and Python. Full documentation: https://www.jblanked.com/news/api/docs/
 
 ## Features
 
 - Easy access to JBlanked's News API
 - Access to News Event History, Machine Learning Predictions, Smart Analysis, and more.
+- Access to News Calendar
 - Supports multiple programming languages including MQL4 and Python
 
-## Installation
+## Python Installation
 
 ```
 pip install jb-news
 ```
 This API is freely accessible through our library and through GET requests. Get your API key from: https://www.jblanked.com/profile/. Note that the free tier has a rate limit of once every 5 minutes, but VIP members enjoy unrestricted access.
-## Usage
+## Python Usage
 
 After installation, import the class:
 
