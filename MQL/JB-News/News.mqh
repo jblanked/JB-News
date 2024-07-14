@@ -373,14 +373,14 @@ bool CJBNews::calendar(bool today=false, bool this_week = false)
 
    if(result != "")
      {
-      JSON.Deserialize(result, CP_UTF8); // deserialize into JSON format
+      this.JSON.Deserialize(result, CP_UTF8); // deserialize into JSON format
 
       CJAVal temp;
 
       ArrayResize(this.calenderInfo,7000);
       for(e = 0; e < 7000; e++)
         {
-         temp = JSON[e];
+         temp = this.JSON[e];
 
          if(datetime(temp["Date"].ToStr())==0)
             break;
@@ -827,8 +827,8 @@ string CJBNews::GPT(const string message)
 //--- serialize to string
    result = "";
    char data[];
-   JSON["content"] = message;
-   ArrayResize(data, StringToCharArray(JSON.Serialize(), data, 0, WHOLE_ARRAY) - 1);
+   this.JSON["content"] = message;
+   ArrayResize(data, StringToCharArray(this.JSON.Serialize(), data, 0, WHOLE_ARRAY) - 1);
 
    static const string gptUrl = "https://www.jblanked.com/news/api/gpt/";
    const string headers = "Content-Type: application/json" + "\r\n" + "Authorization: Api-Key " + api_key;
@@ -844,11 +844,11 @@ string CJBNews::GPT(const string message)
 
       if(StringLen(result) > 0)
         {
-         JSON.Clear();
-         JSON.Deserialize(result, CP_UTF8);
+         this.JSON.Clear();
+         this.JSON.Deserialize(result, CP_UTF8);
         }
 
-      const string task_id = JSON["task_id"].ToStr();
+      const string task_id = this.JSON["task_id"].ToStr();
 
 
       while(
@@ -898,9 +898,9 @@ string CJBNews::GPT(const string message)
 
          if(result != "")
            {
-            JSON.Clear();
-            JSON.Deserialize(result,CP_UTF8);
-            tempMessage = JSON["message"].ToStr();
+            this.JSON.Clear();
+            this.JSON.Deserialize(result,CP_UTF8);
+            tempMessage = this.JSON["message"].ToStr();
            }
          else
            {
