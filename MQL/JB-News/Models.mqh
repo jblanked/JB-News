@@ -481,3 +481,184 @@ void CJBNewsModel::setML(CJAVal & temp)
    this.m_machineLearning.outcomes.actual_equal_to_forecast_more_than_previous[1].timeframe = PERIOD_M30;
   }
 //+------------------------------------------------------------------+
+ENUM_BULLISH_OR_BEARISH SmartAnalysisTrend(SmartAnalysisModel & model, ENUM_NEWS_STRATEGY strategy)
+  {
+   switch(strategy)
+     {
+      case actual_equal_to_forecast_and_previous:
+         return model.actual_equal_to_forecast_and_previous;
+
+      case actual_equal_to_forecast_less_than_previous:
+         return model.actual_equal_to_forecast_less_than_previous;
+
+      case actual_equal_to_forecast_more_than_previous:
+         return model.actual_equal_to_forecast_more_than_previous;
+
+      case actual_less_than_forecast_and_actual_equal_to_previous:
+         return model.actual_less_than_forecast_and_actual_equal_to_previous;
+
+      case actual_less_than_forecast_and_actual_more_than_previous:
+         return model.actual_less_than_forecast_and_actual_more_than_previous;
+
+      case actual_less_than_forecast_and_previous:
+         return model.actual_less_than_forecast_and_previous;
+
+      case actual_less_than_forecast_equal_to_previous:
+         return model.actual_less_than_forecast_equal_to_previous;
+
+      case actual_less_than_forecast_more_than_previous:
+         return model.actual_less_than_forecast_more_than_previous;
+
+      case actual_more_than_forecast_and_actual_equal_to_previous:
+         return model.actual_more_than_forecast_and_actual_equal_to_previous;
+
+      case actual_more_than_forecast_and_actual_less_than_previous:
+         return model.actual_more_than_forecast_and_actual_less_than_previous;
+
+      case actual_more_than_forecast_equal_to_previous:
+         return model.actual_more_than_forecast_equal_to_previous;
+
+      case actual_more_than_forecast_less_than_previous:
+         return model.actual_more_than_forecast_less_than_previous;
+
+      case actual_more_than_forecast_more_than_previous:
+         return model.actual_more_than_forecast_more_than_previous;
+
+      default:
+         return ENUM_NEUTRAL;
+     };
+  }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+ENUM_BULLISH_OR_BEARISH MachineLearningTrend(MachineLearningOutcomeModel & model, ENUM_NEWS_STRATEGY strategy)
+  {
+   double bearVal = 0;
+   double bullVal = 0;
+
+   switch(strategy)
+     {
+      case actual_equal_to_forecast_and_previous:
+         bearVal += model.actual_equal_to_forecast_and_previous[0].bearish;
+         bearVal += model.actual_equal_to_forecast_and_previous[1].bearish;
+         bearVal += model.actual_equal_to_forecast_and_previous[2].bearish;
+         bullVal += model.actual_equal_to_forecast_and_previous[0].bullish;
+         bullVal += model.actual_equal_to_forecast_and_previous[1].bullish;
+         bullVal += model.actual_equal_to_forecast_and_previous[2].bullish;
+         break;
+
+      case actual_equal_to_forecast_less_than_previous:
+         bearVal += model.actual_equal_to_forecast_less_than_previous[0].bearish;
+         bearVal += model.actual_equal_to_forecast_less_than_previous[1].bearish;
+         bearVal += model.actual_equal_to_forecast_less_than_previous[2].bearish;
+         bullVal += model.actual_equal_to_forecast_less_than_previous[0].bullish;
+         bullVal += model.actual_equal_to_forecast_less_than_previous[1].bullish;
+         bullVal += model.actual_equal_to_forecast_less_than_previous[2].bullish;
+         break;
+
+      case actual_equal_to_forecast_more_than_previous:
+         bearVal += model.actual_equal_to_forecast_more_than_previous[0].bearish;
+         bearVal += model.actual_equal_to_forecast_more_than_previous[1].bearish;
+         bearVal += model.actual_equal_to_forecast_more_than_previous[2].bearish;
+         bullVal += model.actual_equal_to_forecast_more_than_previous[0].bullish;
+         bullVal += model.actual_equal_to_forecast_more_than_previous[1].bullish;
+         bullVal += model.actual_equal_to_forecast_more_than_previous[2].bullish;
+         break;
+
+      case actual_less_than_forecast_and_actual_equal_to_previous:
+         bearVal += model.actual_less_than_forecast_and_actual_equal_to_previous[0].bearish;
+         bearVal += model.actual_less_than_forecast_and_actual_equal_to_previous[1].bearish;
+         bearVal += model.actual_less_than_forecast_and_actual_equal_to_previous[2].bearish;
+         bullVal += model.actual_less_than_forecast_and_actual_equal_to_previous[0].bullish;
+         bullVal += model.actual_less_than_forecast_and_actual_equal_to_previous[1].bullish;
+         bullVal += model.actual_less_than_forecast_and_actual_equal_to_previous[2].bullish;
+         break;
+
+      case actual_less_than_forecast_and_actual_more_than_previous:
+         bearVal += model.actual_less_than_forecast_and_actual_more_than_previous[0].bearish;
+         bearVal += model.actual_less_than_forecast_and_actual_more_than_previous[1].bearish;
+         bearVal += model.actual_less_than_forecast_and_actual_more_than_previous[2].bearish;
+         bullVal += model.actual_less_than_forecast_and_actual_more_than_previous[0].bullish;
+         bullVal += model.actual_less_than_forecast_and_actual_more_than_previous[1].bullish;
+         bullVal += model.actual_less_than_forecast_and_actual_more_than_previous[2].bullish;
+         break;
+
+      case actual_less_than_forecast_and_previous:
+         bearVal += model.actual_less_than_forecast_and_previous[0].bearish;
+         bearVal += model.actual_less_than_forecast_and_previous[1].bearish;
+         bearVal += model.actual_less_than_forecast_and_previous[2].bearish;
+         bullVal += model.actual_less_than_forecast_and_previous[0].bullish;
+         bullVal += model.actual_less_than_forecast_and_previous[1].bullish;
+         bullVal += model.actual_less_than_forecast_and_previous[2].bullish;
+         break;
+
+      case actual_less_than_forecast_equal_to_previous:
+         bearVal += model.actual_less_than_forecast_equal_to_previous[0].bearish;
+         bearVal += model.actual_less_than_forecast_equal_to_previous[1].bearish;
+         bearVal += model.actual_less_than_forecast_equal_to_previous[2].bearish;
+         bullVal += model.actual_less_than_forecast_equal_to_previous[0].bullish;
+         bullVal += model.actual_less_than_forecast_equal_to_previous[1].bullish;
+         bullVal += model.actual_less_than_forecast_equal_to_previous[2].bullish;
+         break;
+
+      case actual_less_than_forecast_more_than_previous:
+         bearVal += model.actual_less_than_forecast_more_than_previous[0].bearish;
+         bearVal += model.actual_less_than_forecast_more_than_previous[1].bearish;
+         bearVal += model.actual_less_than_forecast_more_than_previous[2].bearish;
+         bullVal += model.actual_less_than_forecast_more_than_previous[0].bullish;
+         bullVal += model.actual_less_than_forecast_more_than_previous[1].bullish;
+         bullVal += model.actual_less_than_forecast_more_than_previous[2].bullish;
+         break;
+
+      case actual_more_than_forecast_and_actual_equal_to_previous:
+         bearVal += model.actual_more_than_forecast_and_actual_equal_to_previous[0].bearish;
+         bearVal += model.actual_more_than_forecast_and_actual_equal_to_previous[1].bearish;
+         bearVal += model.actual_more_than_forecast_and_actual_equal_to_previous[2].bearish;
+         bullVal += model.actual_more_than_forecast_and_actual_equal_to_previous[0].bullish;
+         bullVal += model.actual_more_than_forecast_and_actual_equal_to_previous[1].bullish;
+         bullVal += model.actual_more_than_forecast_and_actual_equal_to_previous[2].bullish;
+         break;
+
+      case actual_more_than_forecast_and_actual_less_than_previous:
+         bearVal += model.actual_more_than_forecast_and_actual_less_than_previous[0].bearish;
+         bearVal += model.actual_more_than_forecast_and_actual_less_than_previous[1].bearish;
+         bearVal += model.actual_more_than_forecast_and_actual_less_than_previous[2].bearish;
+         bullVal += model.actual_more_than_forecast_and_actual_less_than_previous[0].bullish;
+         bullVal += model.actual_more_than_forecast_and_actual_less_than_previous[1].bullish;
+         bullVal += model.actual_more_than_forecast_and_actual_less_than_previous[2].bullish;
+         break;
+
+      case actual_more_than_forecast_equal_to_previous:
+         bearVal += model.actual_more_than_forecast_equal_to_previous[0].bearish;
+         bearVal += model.actual_more_than_forecast_equal_to_previous[1].bearish;
+         bearVal += model.actual_more_than_forecast_equal_to_previous[2].bearish;
+         bullVal += model.actual_more_than_forecast_equal_to_previous[0].bullish;
+         bullVal += model.actual_more_than_forecast_equal_to_previous[1].bullish;
+         bullVal += model.actual_more_than_forecast_equal_to_previous[2].bullish;
+         break;
+
+      case actual_more_than_forecast_less_than_previous:
+         bearVal += model.actual_more_than_forecast_less_than_previous[0].bearish;
+         bearVal += model.actual_more_than_forecast_less_than_previous[1].bearish;
+         bearVal += model.actual_more_than_forecast_less_than_previous[2].bearish;
+         bullVal += model.actual_more_than_forecast_less_than_previous[0].bullish;
+         bullVal += model.actual_more_than_forecast_less_than_previous[1].bullish;
+         bullVal += model.actual_more_than_forecast_less_than_previous[2].bullish;
+         break;
+
+      case actual_more_than_forecast_more_than_previous:
+         bearVal += model.actual_more_than_forecast_more_than_previous[0].bearish;
+         bearVal += model.actual_more_than_forecast_more_than_previous[1].bearish;
+         bearVal += model.actual_more_than_forecast_more_than_previous[2].bearish;
+         bullVal += model.actual_more_than_forecast_more_than_previous[0].bullish;
+         bullVal += model.actual_more_than_forecast_more_than_previous[1].bullish;
+         bullVal += model.actual_more_than_forecast_more_than_previous[2].bullish;
+         break;
+     };
+
+   bullVal = bullVal == 0 ? 0 : bullVal / 3;
+   bearVal = bearVal == 0 ? 0 : bearVal / 3;
+
+   return bullVal > bearVal ? ENUM_BULLISH : bullVal < bearVal ? ENUM_BEARISH : ENUM_NEUTRAL;
+  }
+//+------------------------------------------------------------------+
