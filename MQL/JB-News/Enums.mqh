@@ -362,6 +362,9 @@ ENUM_NEWS_STRATEGY StringToStrategy(string strategy)
 // remove _ from string if any
    StringReplace(strategy,"_"," ");
 
+// remove double space from string if any
+   StringReplace(strategy,"  "," ");
+
 // remove , from string if any
    StringReplace(strategy,",","");
 
@@ -380,7 +383,11 @@ ENUM_NEWS_STRATEGY StringToStrategy(string strategy)
       return actual_more_than_forecast_and_actual_less_than_previous; // 2
      }
 
-   if(strategy == "3" || strategy == "actual more than forecast equal to previous" || strategy == "Actual > Forecast Forecast = Previous")
+   if(strategy == "3" ||
+      strategy == "actual more than forecast equal to previous" ||
+      strategy == "Actual > Forecast Forecast = Previous" ||
+      strategy == "Actual > Forecast = Previous"
+     )
      {
       return actual_more_than_forecast_equal_to_previous; // 3
      }
@@ -410,7 +417,11 @@ ENUM_NEWS_STRATEGY StringToStrategy(string strategy)
       return actual_less_than_forecast_and_actual_equal_to_previous; // 8
      }
 
-   if(strategy == "9" || strategy == "actual less than forecast equal to previous" || strategy == "Actual < Forecast Forecast = Previous")
+   if(strategy == "9" ||
+      strategy == "actual less than forecast equal to previous" ||
+      strategy == "Actual < Forecast Forecast = Previous" ||
+      strategy == "Actual < Forecast = Previous"
+     )
      {
       return actual_less_than_forecast_equal_to_previous; // 9
      }
@@ -420,12 +431,20 @@ ENUM_NEWS_STRATEGY StringToStrategy(string strategy)
       return actual_equal_to_forecast_and_previous; // 10
      }
 
-   if(strategy == "11" || strategy == "actual equal to forecast less than previous" || strategy == "Actual = Forecast Forecast < Previous")
+   if(strategy == "11" ||
+      strategy == "actual equal to forecast less than previous" ||
+      strategy == "Actual = Forecast Forecast < Previous" ||
+      strategy == "Actual = Forecast < Previous"
+     )
      {
       return actual_equal_to_forecast_less_than_previous; // 11
      }
 
-   if(strategy == "12" || strategy == "actual equal to forecast more than previous" || strategy == "Actual = Forecast Forecast > Previous")
+   if(strategy == "12" ||
+      strategy == "actual equal to forecast more than previous" ||
+      strategy == "Actual = Forecast Forecast > Previous" ||
+      strategy == "Actual = Forecast > Previous"
+     )
      {
       return actual_equal_to_forecast_more_than_previous; // 12
      }
