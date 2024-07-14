@@ -96,7 +96,7 @@ public:
 
    ENUM_BULLISH_OR_BEARISH  runAll(             // EA trading staregy
       const datetime currentTime,
-      enum_news_trend_type trendType = ENUM_SMART_ANALYSIS
+      ENUM_NEWS_TREND_TYPE trendType = ENUM_SMART_ANALYSIS
    )
      {
       /*
@@ -164,7 +164,7 @@ public:
       MachineLearningModel machineLearning;
       SmartAnalysisModel   smartAnalysis;
 
-      ENUM_BULLISH_OR_BEARISH runEvent(const datetime currentTime,const enum_news_trend_type trendType = ENUM_SMART_ANALYSIS)
+      ENUM_BULLISH_OR_BEARISH runEvent(const datetime currentTime,const ENUM_NEWS_TREND_TYPE trendType = ENUM_SMART_ANALYSIS)
         {
          /*
          1. Checks if the current time matches the event's dates in history

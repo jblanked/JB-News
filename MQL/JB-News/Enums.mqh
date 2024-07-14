@@ -227,7 +227,7 @@ enum ENUM_NEWS_EVENTS
    Unemployment_Rate_nsa = 74,                        // Unemployment Rate n.s.a.
    Wholesale_Trade_monthly = 107                      // Wholesale Trade m/m
   };
-enum enum_news_trend_type
+enum ENUM_NEWS_TREND_TYPE
   {
    ENUM_MACHINE_LEARNING,                 // Machine Learning
    ENUM_SMART_ANALYSIS,                   // Smart Analysis
