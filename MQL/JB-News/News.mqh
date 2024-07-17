@@ -66,9 +66,25 @@ public:
    // adds one news event's data to newsInfo
    void              addNews(CJAVal & json)
      {
-      const int n = ArraySize(this.newsInfo);
+      const int n = this.count();
       ArrayResize(this.newsInfo,n+1);
       this.newsInfo[n] = CJBNewsModel(json);
+     }
+
+   void              removeNews(const int index)
+     {
+      // shift items down
+      for(int i = index; i < this.count() - 1; i++)
+        {
+         this.newsInfo[i] = this.newsInfo[i+1];
+        }
+      // drop last item in list
+      ArrayResize(this.newsInfo,this.count()-1);
+     }
+
+   int               count(void)
+     {
+      return ArraySize(newsInfo);
      }
 
    int               offset;                    // GMT-3 = 0, GMT = 3, EST = 7, PST = 10
