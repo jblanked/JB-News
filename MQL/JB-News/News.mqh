@@ -71,6 +71,7 @@ public:
       this.newsInfo[n] = CJBNewsModel(json);
      }
 
+   // remove news event from newsInfo array
    void              removeNews(const int index)
      {
       // shift items down
@@ -82,9 +83,16 @@ public:
       ArrayResize(this.newsInfo,this.count()-1);
      }
 
+   // remove all news events from newsInfo array
+   void              removeAllNews(void)
+     {
+      ArrayResize(this.newsInfo,0);
+     }
+
+   // returns the amount of news events
    int               count(void)
      {
-      return ArraySize(newsInfo);
+      return ArraySize(this.newsInfo);
      }
 
    int               offset;                    // GMT-3 = 0, GMT = 3, EST = 7, PST = 10
@@ -711,6 +719,11 @@ bool CJBNews::get()
 
       // init
       this.place = 0;
+
+      // clear arrays
+      ArrayResize(this.newsInfo,0);
+      ArrayResize(this.eventIDs,0);
+      ArrayResize(this.eventNames,0);
 
       // set
       this.setNewsModel(this.USD, this.total_usd, "USD");
