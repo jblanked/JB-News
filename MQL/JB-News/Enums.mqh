@@ -456,12 +456,12 @@ ENUM_NEWS_STRATEGY StringToStrategy(string strategy)
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-ENUM_NEWS_STRENGTH StringToStrength(string strength)
+ENUM_NEWS_STRENGTH StringToStrength(string strengthVariable)
   {
 // remove _ from string if any
-   StringReplace(strength,"_"," ");
+   StringReplace(strengthVariable,"_"," ");
 
-   if(strength == "Strong Data" || strength == "1")
+   if(strengthVariable == "Strong Data" || strengthVariable == "1")
      {
       return Strong_Data;
      }
