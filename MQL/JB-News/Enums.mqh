@@ -235,9 +235,9 @@ enum ENUM_NEWS_TREND_TYPE
   }; // enum to choose machine learning, smart analysis, or both
 
 //+------------------------------------------------------------------+
-ENUM_BULLISH_OR_BEARISH StringToTrend(const string trend)
+ENUM_BULLISH_OR_BEARISH StringToTrend(const string trendVar)
   {
-   return trend == "Bullish" ? ENUM_BULLISH : trend == "Bearish" ? ENUM_BEARISH : ENUM_NEUTRAL;
+   return trendVar == "Bullish" ? ENUM_BULLISH : trendVar == "Bearish" ? ENUM_BEARISH : ENUM_NEUTRAL;
   }
 //+------------------------------------------------------------------+
 //|                                                                  |
