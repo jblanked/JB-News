@@ -7,7 +7,7 @@ This library is a comprehensive wrapper for JBlanked's News API. It leverages th
 - Easy access to JBlanked's News API
 - Access to News Event History, Machine Learning Predictions, Smart Analysis, and more.
 - Access to News Calendar
-- Supports multiple programming languages including MQL4 and Python
+- Supports multiple programming languages including MQL4, Python, and Swift.
 
 ## Python Installation
 
