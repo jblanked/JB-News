@@ -6,8 +6,9 @@
 #property copyright "Copyright 2024,JBlanked"
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property description "Access JBlanked's News Library."
+#property strict
 #include <jb-news\\Models.mqh>
-// Last Update: July 13th, 2024
+// Last Update: September 23rd, 2024
 
 #import "Wininet.dll"
 int InternetOpenW(string name, int config, string, string, int);
@@ -50,24 +51,24 @@ public:
      {
       api_key = "";
       offset = 0;
-      ObjectsDeleteAll(0,"CJBNews");
-      ArrayResize(eventNames,0);
-      ArrayResize(calenderInfo,0);
-      ArrayResize(eventIDs,0);
+      ObjectsDeleteAll(0, "CJBNews");
+      ArrayResize(eventNames, 0);
+      ArrayResize(calenderInfo, 0);
+      ArrayResize(eventIDs, 0);
      }
 
    CJBNews::        ~CJBNews() // deconstructor
      {
       api_key = "";
       offset = 0;
-      ObjectsDeleteAll(0,"CJBNews");
+      ObjectsDeleteAll(0, "CJBNews");
      }
 
    // adds one news event's data to newsInfo
    void              addNews(CJAVal & json)
      {
       const int n = this.count();
-      ArrayResize(this.newsInfo,n+1);
+      ArrayResize(this.newsInfo, n + 1);
       this.newsInfo[n] = CJBNewsModel(json);
      }
 
@@ -77,16 +78,16 @@ public:
       // shift items down
       for(int i = index; i < this.count() - 1; i++)
         {
-         this.newsInfo[i] = this.newsInfo[i+1];
+         this.newsInfo[i] = this.newsInfo[i + 1];
         }
       // drop last item in list
-      ArrayResize(this.newsInfo,this.count()-1);
+      ArrayResize(this.newsInfo, this.count() - 1);
      }
 
    // remove all news events from newsInfo array
    void              removeAllNews(void)
      {
-      ArrayResize(this.newsInfo,0);
+      ArrayResize(this.newsInfo, 0);
      }
 
    // returns the amount of news events
@@ -103,7 +104,7 @@ public:
 
    NewsHistoryModel  calenderInfo[];            // holds the history info after using the .calendar method
    bool              calendar(                  // connects api with your key and loads all the calendar data
-      bool today=false,
+      bool today = false,
       bool this_week = false
    );
 
@@ -188,7 +189,7 @@ public:
       MachineLearningModel machineLearning;
       SmartAnalysisModel   smartAnalysis;
 
-      ENUM_BULLISH_OR_BEARISH runEvent(const datetime currentTime,const ENUM_NEWS_TREND_TYPE trendType = ENUM_SMART_ANALYSIS)
+      ENUM_BULLISH_OR_BEARISH runEvent(const datetime currentTime, const ENUM_NEWS_TREND_TYPE trendType = ENUM_SMART_ANALYSIS)
         {
          /*
          1. Checks if the current time matches the event's dates in history
@@ -233,15 +234,66 @@ public:
          return ENUM_NEUTRAL;
         }
    private:
-      double               division(const double numerator,const double denominator) {return denominator == 0 ? 0 : numerator / denominator;}
+      double               division(const double numerator, const double denominator) {return denominator == 0 ? 0 : numerator / denominator;}
 
      }; // end of EventInfo struct
 
    EventInfo         info;                  // holds the event info after loading
+
+   //--- takes api.result from  and converts into news model (use with caution)
+   bool              _deserialize(string apiResult)
+     {
+      this.JSON.Deserialize(apiResult, CP_UTF8); // deserialize into JSON format
+
+      //--- Setting USD events
+      this.USD = this.JSON["USD"];
+      this.EUR = this.JSON["EUR"];
+      this.GBP = this.JSON["GBP"];
+      this.JPY = this.JSON["JPY"];
+      this.AUD = this.JSON["AUD"];
+      this.CAD = this.JSON["CAD"];
+      this.CHF = this.JSON["CHF"];
+      this.NZD = this.JSON["NZD"];
+
+      this.total_usd = this.USD["Total"].ToInt();
+
+      if(this.total_usd == 0)
+         return false;
+
+      this.total_eur = this.EUR["Total"].ToInt();
+      this.total_gbp = this.GBP["Total"].ToInt();
+      this.total_jpy = this.JPY["Total"].ToInt();
+      this.total_aud = this.AUD["Total"].ToInt();
+      this.total_cad = this.CAD["Total"].ToInt();
+      this.total_chf = this.CHF["Total"].ToInt();
+      this.total_nzd = this.NZD["Total"].ToInt();
+
+      // init
+      this.place = 0;
+
+      // clear arrays
+      ArrayResize(this.newsInfo, 0);
+      ArrayResize(this.eventIDs, 0);
+      ArrayResize(this.eventNames, 0);
+
+      // set
+      this.setNewsModel(this.USD, this.total_usd, "USD");
+      this.setNewsModel(this.EUR, this.total_eur, "EUR");
+      this.setNewsModel(this.GBP, this.total_gbp, "GBP");
+      this.setNewsModel(this.JPY, this.total_jpy, "JPY");
+      this.setNewsModel(this.AUD, this.total_aud, "AUD");
+      this.setNewsModel(this.CAD, this.total_cad, "CAD");
+      this.setNewsModel(this.CHF, this.total_chf, "CHF");
+      this.setNewsModel(this.NZD, this.total_nzd, "NZD");
+
+      return true;
+     }
+   
+   string            result; // used to hold API request json
+   
 private:
    uchar             buffer[1024];
    int               bytesRead;
-   string            result;
 
    int               k;
    int               l;
@@ -252,7 +304,7 @@ private:
 
    int               place;
    CJAVal            JSON;
-   CJAVal            NZD,USD,CAD,AUD,EUR,CHF,GBP,JPY;
+   CJAVal            NZD, USD, CAD, AUD, EUR, CHF, GBP, JPY;
 
    long              total_events, total_usd, total_eur, total_nzd, total_gbp, total_chf, total_jpy, total_aud, total_cad;
 
@@ -260,12 +312,12 @@ private:
 
    bool              ObjectFound(const string name) {return ObjectFind(0, name) < 0 ? false : true;}
 
-   double            ChartPriceMin(const long chart_ID=0,const int sub_window=0)
+   double            ChartPriceMin(const long chart_ID = 0, const int sub_window = 0)
      {
-      double results=EMPTY_VALUE;
+      double results = EMPTY_VALUE;
       ResetLastError();
-      if(!ChartGetDouble(chart_ID,CHART_PRICE_MIN,sub_window,results))
-         Print(__FUNCTION__+", Error Code = ",GetLastError());
+      if(!ChartGetDouble(chart_ID, CHART_PRICE_MIN, sub_window, results))
+         Print(__FUNCTION__ + ", Error Code = ", GetLastError());
       return(results);
      }
 
@@ -275,13 +327,13 @@ private:
 
       if(!ObjectFound(this.object_name))
         {
-         ObjectCreate(0,this.object_name,OBJ_TEXT,sub_window,time,price);
-         ObjectSetInteger(0,this.object_name,OBJPROP_YDISTANCE,5);
-         ObjectSetInteger(0,this.object_name,OBJPROP_COLOR,color_type);
-         ObjectSetDouble(0,this.object_name,OBJPROP_ANGLE,angle);
-         ObjectSetString(0,this.object_name,OBJPROP_TEXT,text);
-         ObjectSetInteger(0,this.object_name,OBJPROP_BACK,true);
-         ObjectSetInteger(0,this.object_name,OBJPROP_FONTSIZE,fontsize);
+         ObjectCreate(0, this.object_name, OBJ_TEXT, sub_window, time, price);
+         ObjectSetInteger(0, this.object_name, OBJPROP_YDISTANCE, 5);
+         ObjectSetInteger(0, this.object_name, OBJPROP_COLOR, color_type);
+         ObjectSetDouble(0, this.object_name, OBJPROP_ANGLE, angle);
+         ObjectSetString(0, this.object_name, OBJPROP_TEXT, text);
+         ObjectSetInteger(0, this.object_name, OBJPROP_BACK, true);
+         ObjectSetInteger(0, this.object_name, OBJPROP_FONTSIZE, fontsize);
         }
      }
 
@@ -291,15 +343,15 @@ private:
 
       if(!ObjectFound(this.object_name))
         {
-         ObjectCreate(0,this.object_name,OBJ_VLINE,0,time,price);
-         ObjectSetInteger(0,this.object_name,OBJPROP_COLOR,color_type);
-         ObjectSetInteger(0,this.object_name,OBJPROP_STYLE,STYLE_SOLID);
-         ObjectSetInteger(0,this.object_name,OBJPROP_WIDTH,width);
-         ObjectSetInteger(0,this.object_name,OBJPROP_BACK,true);
-         ObjectSetInteger(0,this.object_name,OBJPROP_SELECTABLE,false);
-         ObjectSetInteger(0,this.object_name,OBJPROP_SELECTED,false);
-         ObjectSetInteger(0,this.object_name,OBJPROP_HIDDEN,true);
-         ObjectSetInteger(0,this.object_name,OBJPROP_ZORDER,0);
+         ObjectCreate(0, this.object_name, OBJ_VLINE, 0, time, price);
+         ObjectSetInteger(0, this.object_name, OBJPROP_COLOR, color_type);
+         ObjectSetInteger(0, this.object_name, OBJPROP_STYLE, STYLE_SOLID);
+         ObjectSetInteger(0, this.object_name, OBJPROP_WIDTH, width);
+         ObjectSetInteger(0, this.object_name, OBJPROP_BACK, true);
+         ObjectSetInteger(0, this.object_name, OBJPROP_SELECTABLE, false);
+         ObjectSetInteger(0, this.object_name, OBJPROP_SELECTED, false);
+         ObjectSetInteger(0, this.object_name, OBJPROP_HIDDEN, true);
+         ObjectSetInteger(0, this.object_name, OBJPROP_ZORDER, 0);
         }
      }
 
@@ -313,7 +365,7 @@ private:
 //+------------------------------------------------------------------+
 void CJBNews::chart(const color colorOfLine, const color colorOfText)
   {
-   if(this.calendar(false,true))
+   if(this.calendar(false, true))
      {
       for(int j = 0; j < ArraySize(this.calenderInfo); j++)
         {
@@ -339,16 +391,16 @@ void CJBNews::chart(const color colorOfLine, const color colorOfText)
 //+------------------------------------------------------------------+
 //|    connects api with your key and loads all the calendar data    |
 //+------------------------------------------------------------------+
-bool CJBNews::calendar(bool today=false, bool this_week = false)
+bool CJBNews::calendar(bool today = false, bool this_week = false)
   {
-   if(StringLen(this.api_key)<30)
+   if(StringLen(this.api_key) < 30)
       return false;
 
    this.bytesRead = 0;
    this.result = "";
 
    string url = "https://www.jblanked.com/news/api/mql5/calendar/";
-   if(today&&!this_week)
+   if(today && !this_week)
       url = "https://www.jblanked.com/news/api/mql5/calendar/today/";
    else
       if(this_week && !today)
@@ -401,12 +453,12 @@ bool CJBNews::calendar(bool today=false, bool this_week = false)
 
       CJAVal temp;
 
-      ArrayResize(this.calenderInfo,7000);
+      ArrayResize(this.calenderInfo, 7000);
       for(e = 0; e < 7000; e++)
         {
          temp = this.JSON[e];
 
-         if(datetime(temp["Date"].ToStr())==0)
+         if(datetime(temp["Date"].ToStr()) == 0)
             break;
          else
            {
@@ -415,7 +467,7 @@ bool CJBNews::calendar(bool today=false, bool this_week = false)
 
         }
 
-      ArrayResize(this.calenderInfo,e+1);
+      ArrayResize(this.calenderInfo, e + 1);
 
       return true;
      }
@@ -621,7 +673,7 @@ bool CJBNews::load(const long eventID)
          this.info.category   = this.newsInfo[a].m_category;
 
          this.info.eventCount = ArraySize(this.newsInfo[a].m_history);
-         ArrayResize(this.info.history,this.info.eventCount);
+         ArrayResize(this.info.history, this.info.eventCount);
 
          for(l = 0; l < this.info.eventCount; l++)
            {
@@ -641,7 +693,7 @@ bool CJBNews::load(const long eventID)
 //+------------------------------------------------------------------+
 bool CJBNews::get()
   {
-   if(StringLen(this.api_key)<30)
+   if(StringLen(this.api_key) < 30)
       return false;
 
    this.bytesRead = 0;
@@ -692,50 +744,7 @@ bool CJBNews::get()
 
    if(this.result != "")
      {
-      this.JSON.Deserialize(this.result, CP_UTF8); // deserialize into JSON format
-
-      //--- Setting USD events
-      this.USD = this.JSON["USD"];
-      this.EUR = this.JSON["EUR"];
-      this.GBP = this.JSON["GBP"];
-      this.JPY = this.JSON["JPY"];
-      this.AUD = this.JSON["AUD"];
-      this.CAD = this.JSON["CAD"];
-      this.CHF = this.JSON["CHF"];
-      this.NZD = this.JSON["NZD"];
-
-      this.total_usd = this.USD["Total"].ToInt();
-
-      if(this.total_usd == 0)
-         return false;
-
-      this.total_eur = this.EUR["Total"].ToInt();
-      this.total_gbp = this.GBP["Total"].ToInt();
-      this.total_jpy = this.JPY["Total"].ToInt();
-      this.total_aud = this.AUD["Total"].ToInt();
-      this.total_cad = this.CAD["Total"].ToInt();
-      this.total_chf = this.CHF["Total"].ToInt();
-      this.total_nzd = this.NZD["Total"].ToInt();
-
-      // init
-      this.place = 0;
-
-      // clear arrays
-      ArrayResize(this.newsInfo,0);
-      ArrayResize(this.eventIDs,0);
-      ArrayResize(this.eventNames,0);
-
-      // set
-      this.setNewsModel(this.USD, this.total_usd, "USD");
-      this.setNewsModel(this.EUR, this.total_eur, "EUR");
-      this.setNewsModel(this.GBP, this.total_gbp, "GBP");
-      this.setNewsModel(this.JPY, this.total_jpy, "JPY");
-      this.setNewsModel(this.AUD, this.total_aud, "AUD");
-      this.setNewsModel(this.CAD, this.total_cad, "CAD");
-      this.setNewsModel(this.CHF, this.total_chf, "CHF");
-      this.setNewsModel(this.NZD, this.total_nzd, "NZD");
-
-      return true;
+      return this._deserialize(this.result);
      }
    else
      {
@@ -748,9 +757,9 @@ bool CJBNews::get()
 //+------------------------------------------------------------------+
 void CJBNews::setNewsModel(CJAVal & currencyJSON, const long eventCount, const string currency)
   {
-   ArrayResize(this.newsInfo,ArraySize(this.newsInfo) + (int)eventCount);
-   ArrayResize(this.eventIDs,ArraySize(this.eventIDs) + (int)eventCount);
-   ArrayResize(this.eventNames,ArraySize(this.eventNames) + (int)eventCount);
+   ArrayResize(this.newsInfo, ArraySize(this.newsInfo) + (int)eventCount);
+   ArrayResize(this.eventIDs, ArraySize(this.eventIDs) + (int)eventCount);
+   ArrayResize(this.eventNames, ArraySize(this.eventNames) + (int)eventCount);
    for(int n = 0; n < (int)eventCount; n++)
      {
       // set currency since the /full-list/ endpoint doesn't contain currency in the list
@@ -845,7 +854,7 @@ int CJBNews::amountOfDays(int current_month, int year)
 //+------------------------------------------------------------------+
 string CJBNews::GPT(const string message)
   {
-   if(StringLen(api_key)<30)
+   if(StringLen(api_key) < 30)
       return "Invalid API Key";
 
    bytesRead = 0;
@@ -928,7 +937,7 @@ string CJBNews::GPT(const string message)
          if(result != "")
            {
             this.JSON.Clear();
-            this.JSON.Deserialize(result,CP_UTF8);
+            this.JSON.Deserialize(result, CP_UTF8);
             tempMessage = this.JSON["message"].ToStr();
            }
          else
@@ -942,7 +951,7 @@ string CJBNews::GPT(const string message)
      }
    else
      {
-      MessageBox("Add the address 'https://www.jblanked.com/'  to the list of allowed URLs on tab 'Expert Advisors'","Error",MB_ICONINFORMATION);
+      MessageBox("Add the address 'https://www.jblanked.com/'  to the list of allowed URLs on tab 'Expert Advisors'", "Error", MB_ICONINFORMATION);
       return "Error occured..";
      }
 

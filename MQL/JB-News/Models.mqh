@@ -5,6 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2024,JBlanked"
 #property link      "https://www.jblanked.com/"
+#property strict
 #include <jb-news\\Structs.mqh>
 //+------------------------------------------------------------------+
 //|                                                                  |

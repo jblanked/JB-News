@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2024,JBlanked"
 #property link      "https://www.jblanked.com/"
-
+#property strict
 enum ENUM_BULLISH_OR_BEARISH
   {
    ENUM_BEARISH = -1,   // Bearish
@@ -78,6 +78,7 @@ enum ENUM_CURRENCY
    JPY = 6, // JPY
    CAD = 7, // CAD
    CNY = 8, // CNY
+   XAU = 9, // XAU
   };
 
 enum ENUM_NEWS_EVENTS
@@ -237,7 +238,7 @@ enum ENUM_NEWS_TREND_TYPE
 //+------------------------------------------------------------------+
 ENUM_BULLISH_OR_BEARISH StringToTrend(const string trendVar)
   {
-   return trendVar == "Bullish" ? ENUM_BULLISH : trendVar == "Bearish" ? ENUM_BEARISH : ENUM_NEUTRAL;
+   return ((trendVar == "ENUM_BULLISH") || (trendVar == "Bullish")) ? ENUM_BULLISH : ((trendVar == "ENUM_BEARISH") || (trendVar == "Bearish")) ? ENUM_BEARISH : ENUM_NEUTRAL;
   }
 //+------------------------------------------------------------------+
 //|                                                                  |
