@@ -919,3 +919,55 @@ string NewsEventToString(ENUM_NEWS_EVENTS news_event_choice)
    return event;
   }
 //+------------------------------------------------------------------+
+string NewsStrategyToString(ENUM_NEWS_STRATEGY strategy_choice)
+  {
+   string event_outcome = "";
+   switch(strategy_choice)
+     {
+      case data_not_loaded:
+         event_outcome = "Data Not Loaded";
+         break;
+      case actual_more_than_forecast_more_than_previous:
+         event_outcome = "Actual > Forecast > Previous";
+         break;
+      case actual_more_than_forecast_less_than_previous:
+         event_outcome = "Actual > Forecast, Forecast < Previous";
+         break;
+      case actual_more_than_forecast_and_actual_less_than_previous:
+         event_outcome = "Actual > Forecast, Actual < Previous";
+         break;
+      case actual_more_than_forecast_equal_to_previous:
+         event_outcome = "Actual > Forecast, Forecast = Previous";
+         break;
+      case actual_more_than_forecast_and_actual_equal_to_previous:
+         event_outcome = "Actual > Forecast, Actual = Previous";
+         break;
+      case actual_less_than_forecast_and_previous:
+         event_outcome = "Actual < Forecast < Previous";
+         break;
+      case actual_less_than_forecast_more_than_previous:
+         event_outcome = "Actual < Forecast, Forecast > Previous";
+         break;
+      case actual_less_than_forecast_and_actual_more_than_previous:
+         event_outcome = "Actual < Forecast, Actual > Previous";
+         break;
+      case actual_less_than_forecast_equal_to_previous:
+         event_outcome = "Actual < Forecast = Previous";
+         break;
+      case actual_equal_to_forecast_and_previous:
+         event_outcome = "Actual = Forecast = Previous";
+         break;
+      case actual_equal_to_forecast_more_than_previous:
+         event_outcome = "Actual = Forecast > Previous";
+         break;
+      case actual_equal_to_forecast_less_than_previous:
+         event_outcome = "Actual = Forecast < Previous";
+         break;
+      case actual_less_than_forecast_and_actual_equal_to_previous:
+         event_outcome = "Actual < Forecast, Actual = Previous";
+         break;
+     };
+
+   return event_outcome;
+  }
+//+------------------------------------------------------------------+
