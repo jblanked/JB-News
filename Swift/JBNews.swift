@@ -9,9 +9,9 @@ public class JBNews {
         self.apiKey = apiKey
     }
 
-    func get() async -> [NewsInfo] {
+    func get(newsSource: String = "mql5") async -> [NewsInfo] {
         // set url
-        if let url = URL(string: "https://www.jblanked.com/news/api/mql5/full-list/")
+        if let url = URL(string: "https://www.jblanked.com/news/api/\(newsSource)/full-list/")
         {
             
             // create a request
@@ -39,9 +39,9 @@ public class JBNews {
         return [NewsInfo(Name: "Test", Currency: "USD", ID: 0)]
     }
 
-    func calendar(today: Bool = false, thisWeek: Bool = false) async -> [HistoryData] {
+    func calendar(today: Bool = false, thisWeek: Bool = false, newsSource: String = "mql5") async -> [HistoryData] {
         // set url
-        var urlStr: String = thisWeek && !today ? "https://www.jblanked.com/news/api/mql5/calendar/week/" : "https://www.jblanked.com/news/api/mql5/calendar/today/"
+        var urlStr: String = thisWeek && !today ? "https://www.jblanked.com/news/api/\(newsSource)/calendar/week/" : "https://www.jblanked.com/news/api/\(newsSource)/calendar/today/"
         if let url = URL(string: urlStr)
         {
             // create a request

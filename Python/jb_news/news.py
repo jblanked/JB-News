@@ -15,16 +15,14 @@ class CJBNews:
         self.offset = 0
 
     def _division(self, a: float, b: float):
-        if b == 0:
-            return 0
-        else:
-            return a / b
+        """Division function"""
+        return 0 if b == 0 else a / b
 
     @dataclass
     class _CalendarInfo:
         name: str
         currency: str
-        eventID: int
+        event_id: int
         category: str
         date: datetime
         actual: float
@@ -39,7 +37,7 @@ class CJBNews:
     class _EventInfo:
         name: str
         currency: str
-        eventID: int
+        event_id: int
         category: str
         history: list
         machine_learning: dict
@@ -61,12 +59,11 @@ class CJBNews:
         ]
 
         def _division(self, a: float, b: float):
-            if b == 0:
-                return 0
-            else:
-                return a / b
+            """Division function"""
+            return 0 if b == 0 else a / b
 
-        def trendSA(self, outcome) -> str:
+        def trend_smart_analysis(self, outcome: str) -> str:
+            """Returns the trend based on the smart analysis data"""
             for pat in self.patterns:
                 for value in self.smart_analysis:
                     if str(value) == str(pat) and str(value) == str(outcome):
@@ -77,8 +74,8 @@ class CJBNews:
                         else:
                             return "Neutral"
 
-        def trendML(self, outcome) -> str:
-
+        def trend_machine_learning(self, outcome: str) -> str:
+            """Returns the trend based on the machine learning data"""
             for pat in self.patterns:
                 val = self.machine_learning["Outcomes"]
                 for item in val:
@@ -111,63 +108,65 @@ class CJBNews:
                             if accuracy > 0.5:
                                 if bullish > bearish:
                                     return "Bullish"
-                                elif bearish > bullish:
+                                if bearish > bullish:
                                     return "Bearish"
-                                else:
-                                    return "Neutral"
-                            else:
-                                return "Neutral"
 
-        def isEventTime(self, iteration, currentTime):
-            # (datetime)eventHistory[iteration][0] != 0 && (datetime)eventHistory[iteration][0] == currentTime;}
-            eventTime = self.history[iteration]["Date"]
-            eventTime = datetime.datetime.strptime(eventTime, "%Y-%m-%d %H:%M:%S")
-            if eventTime != 0 and eventTime == currentTime:
+                            return "Neutral"
+
+        def is_event_time(self, iteration: int, current_time: datetime) -> bool:
+            """Checks if the event time is the same as the current time"""
+            event_time = self.history[iteration]["Date"]
+            event_time = datetime.datetime.strptime(event_time, "%Y-%m-%d %H:%M:%S")
+            if event_time != 0 and event_time == current_time:
                 return True
-            else:
-                return False
 
-        def outcome(self, iteration):
+            return False
+
+        def outcome(self, iteration: int) -> str:
+            """Returns the outcome of the event"""
             actual = self.history[iteration]["Actual"]
             forecast = self.history[iteration]["Forecast"]
             previous = self.history[iteration]["Previous"]
 
             if actual > forecast and forecast > previous:
                 return self.patterns[0]
-            elif actual > forecast and forecast < previous and actual > previous:
+            if actual > forecast and forecast < previous and actual > previous:
                 return self.patterns[1]
-            elif actual > forecast and actual < previous:
+            if actual > forecast and actual < previous:
                 return self.patterns[2]
-            elif actual > forecast and forecast == previous:
+            if actual > forecast and forecast == previous:
                 return self.patterns[3]
-            elif actual > forecast and actual == previous:
+            if actual > forecast and actual == previous:
                 return self.patterns[4]
-            elif actual < forecast and forecast < previous:
+            if actual < forecast and forecast < previous:
                 return self.patterns[5]
-            elif actual < forecast and forecast > previous and actual < previous:
+            if actual < forecast and forecast > previous and actual < previous:
                 return self.patterns[6]
-            elif actual < forecast and actual > previous:
+            if actual < forecast and actual > previous:
                 return self.patterns[7]
-            elif actual < forecast and forecast == previous:
+            if actual < forecast and forecast == previous:
                 return self.patterns[8]
-            elif actual < forecast and actual == previous:
+            if actual < forecast and actual == previous:
                 return self.patterns[9]
-            elif actual == forecast and actual == previous:
+            if actual == forecast and actual == previous:
                 return self.patterns[10]
-            elif actual == forecast and forecast > previous:
+            if actual == forecast and forecast > previous:
                 return self.patterns[11]
-            elif actual == forecast and forecast < previous:
+            if actual == forecast and forecast < previous:
                 return self.patterns[12]
-            else:
-                return "Data Not Loaded"
 
-    def calendar(self, api_key, today=False, this_week=False) -> bool:
+            return "Data Not Loaded"
+
+    def calendar(
+        self, api_key: str, today=False, this_week=False, news_source: str = "mql5"
+    ) -> bool:
+        """Gets the calendar data"""
         if today and not this_week:
-            url = "https://www.jblanked.com/news/api/mql5/calendar/today/"
+            url = f"https://www.jblanked.com/news/api/{news_source}/calendar/today/"
         elif this_week and not today:
-            url = "https://www.jblanked.com/news/api/mql5/calendar/week/"
+            url = f"https://www.jblanked.com/news/api/{news_source}/calendar/week/"
         else:
-            url = "https://www.jblanked.com/news/api/mql5/calendar/"
+            url = f"https://www.jblanked.com/news/api/{news_source}/calendar/"
 
         if len(api_key) < 30:
             print("Error: Invalid API Key")
@@ -176,19 +175,19 @@ class CJBNews:
             "Content-Type": "application/json",
             "Authorization": f"Api-Key {api_key}",
         }
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=10)
 
         if response.status_code == 200:
             data = response.json()
-            self._setCalendarList(data)
+            self._set_calendar_list(data)
             return True
-        else:
-            print(f"Error: {response.status_code}")
-            print(response.json())
-            return False
+        print(f"Error: {response.status_code}")
+        print(response.json())
+        return False
 
-    def get(self, api_key) -> bool:
-        url = "https://www.jblanked.com/news/api/mql5/full-list/"
+    def get(self, api_key: str, news_source: str = "mql5") -> bool:
+        """Gets the news data"""
+        url = f"https://www.jblanked.com/news/api/{news_source}/full-list/"
         if len(api_key) < 30:
             print("Error: Invalid API Key")
             return False
@@ -196,28 +195,30 @@ class CJBNews:
             "Content-Type": "application/json",
             "Authorization": f"Api-Key {api_key}",
         }
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=10)
 
         if response.status_code == 200:
             data = response.json()
             self.full_list = data
-            self._eventList()
+            self._event_list()
             return True
-        else:
-            print(f"Error: {response.status_code}")
-            print(response.json())
-            return False
 
-    def load(self, eventID) -> bool:
+        print(f"Error: {response.status_code}")
+        print(response.json())
+        return False
+
+    def load(self, event_id: int) -> bool:
+        """Loads the event from an event ID"""
         for currency in self.full_list:
-            if self.__search(currency, eventID):
+            if self.__search(currency, event_id):
                 return True
 
         return False
 
-    def __search(self, currency, eventID):
+    def __search(self, currency: str, event_id: int) -> bool:
+        """Searches for the event"""
         for event in self.list:
-            if str(event["Event_ID"]) == str(eventID):
+            if str(event["Event_ID"]) == str(event_id):
                 try:
                     category = event["Category"]
                 except KeyError:
@@ -237,7 +238,7 @@ class CJBNews:
 
                 self.info.name = event["Name"]
                 self.info.currency = currency
-                self.info.eventID = event["Event_ID"]
+                self.info.event_id = event["Event_ID"]
                 self.info.category = category
                 self.info.history = history
                 self.info.machine_learning = machineLearning
@@ -246,7 +247,8 @@ class CJBNews:
 
         return False
 
-    def _eventList(self):
+    def _event_list(self):
+        """Sets the event list"""
         usd_events = [name for name in self.full_list["USD"]["Events"]]
         eur_events = [name for name in self.full_list["EUR"]["Events"]]
         gbp_events = [name for name in self.full_list["GBP"]["Events"]]
@@ -255,29 +257,31 @@ class CJBNews:
         chf_events = [name for name in self.full_list["CHF"]["Events"]]
         jpy_events = [name for name in self.full_list["JPY"]["Events"]]
         nzd_events = [name for name in self.full_list["NZD"]["Events"]]
-        self._setList(usd_events)
-        self._setList(eur_events)
-        self._setList(gbp_events)
-        self._setList(aud_events)
-        self._setList(cad_events)
-        self._setList(chf_events)
-        self._setList(jpy_events)
-        self._setList(nzd_events)
-        self._setBasicList(usd_events, "USD")
-        self._setBasicList(eur_events, "EUR")
-        self._setBasicList(gbp_events, "GBP")
-        self._setBasicList(aud_events, "AUD")
-        self._setBasicList(cad_events, "CAD")
-        self._setBasicList(chf_events, "CHF")
-        self._setBasicList(jpy_events, "JPY")
-        self._setBasicList(nzd_events, "NZD")
+        self._set_list(usd_events)
+        self._set_list(eur_events)
+        self._set_list(gbp_events)
+        self._set_list(aud_events)
+        self._set_list(cad_events)
+        self._set_list(chf_events)
+        self._set_list(jpy_events)
+        self._set_list(nzd_events)
+        self._set_basic_list(usd_events, "USD")
+        self._set_basic_list(eur_events, "EUR")
+        self._set_basic_list(gbp_events, "GBP")
+        self._set_basic_list(aud_events, "AUD")
+        self._set_basic_list(cad_events, "CAD")
+        self._set_basic_list(chf_events, "CHF")
+        self._set_basic_list(jpy_events, "JPY")
+        self._set_basic_list(nzd_events, "NZD")
 
-    def _setList(self, events):
+    def _set_list(self, events: list):
+        """Sets the list"""
         for event in events:
             self.event_names.append(event["Name"])
             self.event_ids.append(event["Event_ID"])
 
-    def _setBasicList(self, events, currency):
+    def _set_basic_list(self, events: list, currency: str):
+        """Sets the basic list"""
         for event in events:
             try:
                 category = event["Category"]
@@ -315,7 +319,8 @@ class CJBNews:
                 }
             )
 
-    def _setCalendarList(self, json_data):
+    def _set_calendar_list(self, json_data: dict):
+        """Sets the calendar list"""
         self.calendar_info = []
         for data in json_data:
             try:
@@ -350,7 +355,7 @@ class CJBNews:
                 self._CalendarInfo(
                     name=data["Name"],
                     currency=data["Currency"],
-                    eventID=data["Event_ID"],
+                    event_id=data["Event_ID"],
                     category=category,
                     date=date,
                     actual=data["Actual"],
@@ -363,7 +368,8 @@ class CJBNews:
                 )
             )
 
-    def GPT(self, api_key, message) -> str:
+    def GPT(self, api_key: str, message: str, delay: int = 1) -> str:
+        """Sends and receives data to the NewsGPT API"""
         url = "https://www.jblanked.com/news/api/gpt/"
         if len(api_key) < 30:
             print("Error: Invalid API Key")
@@ -373,20 +379,21 @@ class CJBNews:
             "Authorization": f"Api-Key {api_key}",
         }
         data = {"content": message}
-        response = requests.post(url, headers=headers, json=data)
+        response = requests.post(url, headers=headers, json=data, timeout=10)
 
         if response.status_code == 200:
             task_id = response.json()["task_id"]
             print("Task started..")
             # Check if task is complete every 2 seconds
             while True:
-                new_response = requests.get(f"{url}status/{task_id}/", headers=headers)
+                new_response = requests.get(
+                    f"{url}status/{task_id}/", headers=headers, timeout=10
+                )
                 json_data = new_response.json()  # Should return a dictionary
                 if json_data.get("status") == "completed":
                     return json_data.get("message")
-                else:
-                    print("Task processing...")
-                    time.sleep(1)
+                print("Task processing...")
+                time.sleep(delay)
         else:
             json_data = response.json()
             print(json_data)
