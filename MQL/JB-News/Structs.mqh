@@ -1,16 +1,16 @@
 //+------------------------------------------------------------------+
 //|                                                      Structs.mqh |
-//|                                          Copyright 2024,JBlanked |
+//|                                     Copyright 2024-2025,JBlanked |
 //|                                        https://www.jblanked.com/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2024,JBlanked"
-#property link      "https://www.jblanked.com/"
+#property copyright "Copyright 2024-2025,JBlanked"
+#property link      "https://www.jblanked.com/news/api/docs/"
 #property strict
 #include <jb-news\\JSON.mqh>
 #include <jb-news\\Enums.mqh>
 
 struct NewsHistoryModel
-  {
+{
 public:
    string            name;
    datetime          date;
@@ -26,13 +26,13 @@ public:
    ENUM_NEWS_QUALITY quality;
 
    bool              isEventTime(datetime currentTime = 0)
-     {
+   {
       currentTime = currentTime == 0 ? TimeCurrent() : currentTime;
       return currentTime == this.date;
-     }
+   }
 
    void              set(CJAVal & json)
-     {
+   {
       this.actual    = json["Actual"].ToDbl();
       this.forecast  = json["Forecast"].ToDbl();
       this.previous  = json["Previous"].ToDbl();
@@ -44,21 +44,21 @@ public:
       this.quality   = StringToQuality(json["Quality"].ToStr());
       this.strength  = StringToStrength(json["Strength"].ToStr());
       this.currency  = StringToCurrency(json["Currency"].ToStr());
-      this.projection= json["Projection"].ToDbl();
-     }
+      this.projection = json["Projection"].ToDbl();
+   }
 
 
-  };
+};
 
 struct MachineLearningTrendModel
-  {
+{
    ENUM_TIMEFRAMES   timeframe;
    double            bullish;
    double            bearish;
-  };
+};
 
 struct MachineLearningOutcomeModel
-  {
+{
    MachineLearningTrendModel actual_more_than_forecast_more_than_previous[3];             // Actual > Forecast > Previous
    MachineLearningTrendModel actual_more_than_forecast_less_than_previous[3];             // Actual > Forecast Forecast < Previous
    MachineLearningTrendModel actual_more_than_forecast_and_actual_less_than_previous[3];  // Actual > Forecast Actual < Previous
@@ -72,18 +72,18 @@ struct MachineLearningOutcomeModel
    MachineLearningTrendModel actual_equal_to_forecast_and_previous[3];                    // Actual = Forecast = Previous
    MachineLearningTrendModel actual_equal_to_forecast_less_than_previous[3];              // Actual = Forecast < Previous
    MachineLearningTrendModel actual_equal_to_forecast_more_than_previous[3];              // Actual = Forecast > Previous
-  };
+};
 
 struct MachineLearningModel
-  {
+{
    MachineLearningOutcomeModel   outcomes;
    double                        oneMinuteAccuracy;      // 1 Minute
    double                        thirtyMinuteAccuracy;   // 30 Minute
    double                        oneHourAccuracy;        // 1 Hour
-  };
+};
 
 struct SmartAnalysisModel
-  {
+{
    ENUM_BULLISH_OR_BEARISH actual_more_than_forecast_more_than_previous;            // Actual > Forecast > Previous
    ENUM_BULLISH_OR_BEARISH actual_more_than_forecast_less_than_previous;            // Actual > Forecast Forecast < Previous
    ENUM_BULLISH_OR_BEARISH actual_more_than_forecast_and_actual_less_than_previous; // Actual > Forecast Actual < Previous
@@ -97,5 +97,5 @@ struct SmartAnalysisModel
    ENUM_BULLISH_OR_BEARISH actual_equal_to_forecast_and_previous;                   // Actual = Forecast = Previous
    ENUM_BULLISH_OR_BEARISH actual_equal_to_forecast_less_than_previous;             // Actual = Forecast < Previous
    ENUM_BULLISH_OR_BEARISH actual_equal_to_forecast_more_than_previous;             // Actual = Forecast > Previous
-  };
+};
 //+------------------------------------------------------------------+
