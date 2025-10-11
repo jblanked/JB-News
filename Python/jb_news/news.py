@@ -158,15 +158,14 @@ class CJBNews:
             return "Data Not Loaded"
 
     def calendar(
-        self, api_key: str, today=False, this_week=False, news_source: str = "mql5"
+        self, api_key: str, today=True, this_week=False, news_source: str = "mql5"
     ) -> bool:
         """Gets the calendar data"""
-        if today and not this_week:
-            url = f"https://www.jblanked.com/news/api/{news_source}/calendar/today/"
-        elif this_week and not today:
-            url = f"https://www.jblanked.com/news/api/{news_source}/calendar/week/"
-        else:
-            url = f"https://www.jblanked.com/news/api/{news_source}/calendar/"
+        url = f"https://www.jblanked.com/news/api/{news_source}/calendar"
+        if today:
+            url += "/today/"
+        elif this_week:
+            url += "/week/"
 
         if len(api_key) < 30:
             print("Error: Invalid API Key")
