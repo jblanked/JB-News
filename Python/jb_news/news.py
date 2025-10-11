@@ -158,13 +158,13 @@ class CJBNews:
             return "Data Not Loaded"
 
     def calendar(
-        self, api_key: str, today=True, this_week=False, news_source: str = "mql5"
+        self, api_key: str, today=False, this_week=False, news_source: str = "mql5"
     ) -> bool:
         """Gets the calendar data"""
         url = f"https://www.jblanked.com/news/api/{news_source}/calendar"
-        if today:
+        if today or not this_week:
             url += "/today/"
-        elif this_week:
+        else:
             url += "/week/"
 
         if len(api_key) < 30:
@@ -323,6 +323,10 @@ class CJBNews:
         self.calendar_info = []
         for data in json_data:
             try:
+                event_id = data["Event_ID"]
+            except KeyError:
+                event_id = "N/A"
+            try:
                 category = data["Category"]
             except KeyError:
                 category = "N/A"
@@ -354,7 +358,7 @@ class CJBNews:
                 self._CalendarInfo(
                     name=data["Name"],
                     currency=data["Currency"],
-                    event_id=data["Event_ID"],
+                    event_id=event_id,
                     category=category,
                     date=date,
                     actual=data["Actual"],
