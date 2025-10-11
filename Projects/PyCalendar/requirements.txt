@@ -1,0 +1,6 @@
+certifi==2025.10.5
+charset-normalizer==3.4.3
+idna==3.10
+jb-news==2.2.4
+requests==2.32.5
+urllib3==2.5.0
