@@ -49,7 +49,7 @@ Lastly, load the event info of the specified Event ID:
     if jb.load(event_id):  
         name = jb.info.name 
         currency = jb.info.currency 
-        event_id = jb.info.eventID 
+        event_id = jb.info.event_id 
         history = jb.info.history 
         category = jb.info.category
         machine_learning = jb.info.machine_learning
@@ -65,7 +65,7 @@ if jb.calendar(api_key,today=True):
     for event in jb.calendar_info:
         name = event.name
         currency = event.currency 
-        event_id = event.eventID 
+        event_id = event.event_id 
         category = event.category 
         date = event.date 
         actual = event.actual
