@@ -16,8 +16,9 @@ enum ENUM_BULLISH_OR_BEARISH
 
 enum ENUM_NEWS_SOURCE
 {
-   MQL5_NEWS = 0,          // MQL5
-   FOREX_FACTORY_NEWS = 1, // Forex Factory
+   NEWS_SOURCE_MQL5          = 0, // MQL5
+   NEWS_SOURCE_FOREX_FACTORY = 1, // Forex Factory
+   NEWS_SOURCE_FXSTREET      = 2, // FxStreet
 };
 
 enum ENUM_NEWS_FREQUENCY
@@ -582,22 +583,24 @@ string NewsFrequencyToString(const ENUM_NEWS_FREQUENCY newsFrequency)
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-string NewsFrequencyToEndpoint(const ENUM_NEWS_FREQUENCY newsFrequency, const ENUM_NEWS_SOURCE newsSource = MQL5_NEWS)
+string NewsFrequencyToEndpoint(const ENUM_NEWS_FREQUENCY newsFrequency, const ENUM_NEWS_SOURCE newsSource = NEWS_SOURCE_MQL5)
 {
    string endpoint = "https://www.jblanked.com";
-   
+
    switch(newsSource)
    {
-      case MQL5_NEWS:
-         endpoint += "/news/api/mql5/calendar";
-         break;
-      case FOREX_FACTORY_NEWS:
-         endpoint += "/news/api/forex-factory/calendar";
-         break;
-      default:
-         return "";
+   case NEWS_SOURCE_MQL5:
+      endpoint += "/news/api/mql5/calendar";
+      break;
+   case NEWS_SOURCE_FOREX_FACTORY:
+      endpoint += "/news/api/forex-factory/calendar";
+      break;
+   case NEWS_SOURCE_FXSTREET:
+      endpoint += "/news/api/fxstreet/calendar";
+   default:
+      return "";
    };
-   
+
    switch(newsFrequency)
    {
    case NEWS_FREQUENCY_TODAY:
@@ -615,10 +618,10 @@ string NewsFrequencyToEndpoint(const ENUM_NEWS_FREQUENCY newsFrequency, const EN
    case NEWS_FREQUENCY_ALL:
       endpoint += "/";
       break;
-    default:
+   default:
       return "";
    };
-   
+
    return endpoint;
 }
 //+------------------------------------------------------------------+
@@ -1109,10 +1112,10 @@ string NewsStrategyToString(ENUM_NEWS_STRATEGY strategy_choice)
    return event_outcome;
 }
 //+------------------------------------------------------------------+
-ulong NewsEventID(ENUM_CURRENCY currency, ENUM_NEWS_EVENTS news_event, ENUM_NEWS_SOURCE news_source = MQL5_NEWS)
+ulong NewsEventID(ENUM_CURRENCY currency, ENUM_NEWS_EVENTS news_event, ENUM_NEWS_SOURCE news_source = NEWS_SOURCE_MQL5)
 {
    long event_id = 0;
-   if(news_source == FOREX_FACTORY_NEWS)
+   if(news_source == NEWS_SOURCE_FOREX_FACTORY || news_source == NEWS_SOURCE_FXSTREET)
    {
       // not implented yet
       return 0;

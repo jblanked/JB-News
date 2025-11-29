@@ -1,14 +1,14 @@
 //+------------------------------------------------------------------+
 //|                                                 News-Library.mqh |
-//|                                          Copyright 2024,JBlanked |
+//|                                     Copyright 2024-2025,JBlanked |
 //|                          https://www.jblanked.com/news/api/docs/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2024,JBlanked"
+#property copyright "Copyright 2024-2025,JBlanked"
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property description "Access JBlanked's News Library."
 #property strict
 #include <jb-news\\Models.mqh>
-// Last Update: October 10th, 2025
+// Last Update: November 29th, 2025
 
 #import "Wininet.dll"
 int InternetOpenW(string name, int config, string, string, int);
@@ -110,7 +110,7 @@ public:
    NewsHistoryModel  calenderInfo[];            // holds the history info after using the .calendar method
    bool              calendar(                  // connects api with your key and loads all the calendar data
       const ENUM_NEWS_FREQUENCY newsFrequency,
-      const ENUM_NEWS_SOURCE newsSource = MQL5_NEWS
+      const ENUM_NEWS_SOURCE newsSource = NEWS_SOURCE_MQL5
    );
 
    bool              load(const long eventID);  // load a specific event into the .info property
@@ -120,7 +120,7 @@ public:
    bool              chart(                     // displays this weeks history on the chart
       const color colorOfLine,
       const color colorOfText,
-      const ENUM_NEWS_SOURCE newsSource = MQL5_NEWS
+      const ENUM_NEWS_SOURCE newsSource = NEWS_SOURCE_MQL5
    );
 
    string            GPT(const string message); // query the NewsGPT
@@ -374,7 +374,7 @@ private:
 //+------------------------------------------------------------------+
 //|           displays this weeks history on the chart               |
 //+------------------------------------------------------------------+
-bool CJBNews::chart(const color colorOfLine, const color colorOfText, const ENUM_NEWS_SOURCE newsSource = MQL5_NEWS)
+bool CJBNews::chart(const color colorOfLine, const color colorOfText, const ENUM_NEWS_SOURCE newsSource = NEWS_SOURCE_MQL5)
 {
    if(this.calendar(NEWS_FREQUENCY_WEEK, newsSource))
    {
@@ -404,7 +404,7 @@ bool CJBNews::chart(const color colorOfLine, const color colorOfText, const ENUM
 //+------------------------------------------------------------------+
 //|    connects api with your key and loads all the calendar data    |
 //+------------------------------------------------------------------+
-bool CJBNews::calendar(ENUM_NEWS_FREQUENCY newsFrequency, ENUM_NEWS_SOURCE newsSource = MQL5_NEWS)
+bool CJBNews::calendar(ENUM_NEWS_FREQUENCY newsFrequency, ENUM_NEWS_SOURCE newsSource = NEWS_SOURCE_MQL5)
 {
    if(StringLen(this.api_key) < 30)
    {
