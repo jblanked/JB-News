@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2024-2025,JBlanked LLC"
 #property link      "https://www.jblanked.com/trading-tools/"
-#property version   "1.00"
+#property version   "1.01"
 #property description "An MT4 and MT5 expert advisor that trades using JBlanked's NewsAPI"
 #property strict
 
@@ -31,9 +31,9 @@ input  group "News Settings"
 #else
 input  string           inpNews       = "====News Settings===="; //------------------->
 #endif
-sinput string           inpApiKey     = "API-KEY"; // API Key
-input  ENUM_NEWS_SOURCE inpNewsSource = MQL5_NEWS; // News Source
-input  int              inpOffset     = 0;         // Offset
+sinput string           inpApiKey     = "API-KEY";        // API Key
+input  ENUM_NEWS_SOURCE inpNewsSource = NEWS_SOURCE_MQL5; // News Source
+input  int              inpOffset     = 0;                // Offset
 
 #ifdef __MQL5__
 input  group "Trade Settings"

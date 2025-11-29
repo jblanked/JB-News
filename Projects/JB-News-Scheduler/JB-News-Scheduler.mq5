@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2024-2025,JBlanked"
 #property link      "https://www.jblanked.com/"
-#property version   "1.01"
+#property version   "1.02"
 #property description "Visualize news events or use it in an expert advisor"
 #property strict
 #property indicator_chart_window
@@ -41,11 +41,11 @@
 
 #include <jb-news\\news.mqh>
 
-input  string           inpApiKey     = "API-KEY"; // API Key
-input  ENUM_NEWS_SOURCE inpNewsSource = MQL5_NEWS; // News Source
-sinput color            inpTextColor  = clrBeige;  // Text Color
-sinput color            inpLineColor  = clrCyan;   // Line Color
-input  int              inpOffset     = 0;         // Offset
+input  string           inpApiKey     = "API-KEY";        // API Key
+input  ENUM_NEWS_SOURCE inpNewsSource = NEWS_SOURCE_MQL5; // News Source 
+sinput color            inpTextColor  = clrBeige;         // Text Color
+sinput color            inpLineColor  = clrCyan;          // Line Color
+input  int              inpOffset     = 0;                // Offset
 
 CJBNews *jb;
 int amountOfEvents;
