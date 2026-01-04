@@ -20,33 +20,33 @@ This API is freely accessible through our library and through GET requests. Get 
 After installation, import the class:
 
 ```python
-from jb_news.news import CJBNews 
+from jb_news.news import JBNews 
 ```
-Then set a variable as an instance of the CJBNews class:
+Then set a variable as an instance of the JBNews class:
 
 ```python
-jb = CJBNews()
+jb = JBNews()
 ```
 A list of Event IDs are found on https://www.jblanked.com/news/api/docs/.
 
 Next, set your API key and Event ID:
 
 ```python
-api_key = "YOUR_API_KEY_HERE" 
-
-event_id = 756020001 # CHF CPI
+API_KEY = "YOUR_API_KEY_HERE" 
+NEWS_SOURCE = NEWS_SOURCE_MQL5  # or NEWS_SOURCE_FOREX_FACTORY, NEWS_SOURCE_FXSTREET
+EVENT_ID = 756020001 # CHF CPI
 
 jb.offset = 7  # GMT-3 = 0, GMT = 3, EST = 7, PST = 10
 ```
 
 Next step is to connect to the API by using the get method. 
 ```python
-if jb.get(api_key):  
+if jb.get(API_KEY, news_source=NEWS_SOURCE):  
 ```
 
 Lastly, load the event info of the specified Event ID:
 ```python
-    if jb.load(event_id):  
+    if jb.load(EVENT_ID):  
         name = jb.info.name 
         currency = jb.info.currency 
         event_id = jb.info.event_id 
@@ -61,11 +61,11 @@ Lastly, load the event info of the specified Event ID:
 
 Alternatively, instead of using the get method, you can load the calendar:
 ```python
-if jb.calendar(api_key,today=True):
+if jb.calendar(API_KEY,today=True,news_source=NEWS_SOURCE):
     for event in jb.calendar_info:
         name = event.name
         currency = event.currency 
-        event_id = event.event_id
+        event_id = event.event_id 
         category = event.category 
         date = event.date 
         actual = event.actual
@@ -83,6 +83,6 @@ if jb.calendar(api_key,today=True):
 You can also access our NewsGPT model:
 
 ```python
-gpt_response = jb.GPT(api_key,"What does bullish mean in forex?")
+gpt_response = jb.gpt(api_key,"What does bullish mean in forex?")
 print(gpt_response)
 ```

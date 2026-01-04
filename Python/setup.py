@@ -8,7 +8,7 @@ long_description = (this_directory / "readme.md").read_text()
 setup(
     name="jb_news",
     packages=find_packages(include=["jb_news"]),
-    version="2.2.6",
+    version="2.3.0",
     description="A comprehensive wrapper for JBlanked's News API, leveraging OpenAI, Machine Learning, and MQL5's Calendar.",
     author="JBlanked",
     install_requires=["requests"],
