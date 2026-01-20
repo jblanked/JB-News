@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                       Models.mqh |
-//|                                     Copyright 2024-2025,JBlanked |
+//|                                     Copyright 2024-2026,JBlanked |
 //|                                        https://www.jblanked.com/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2024-2025,JBlanked"
+#property copyright "Copyright 2024-2026,JBlanked"
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property strict
 #include <jb-news\\Structs.mqh>
@@ -17,6 +17,7 @@ public:
    ENUM_CURRENCY        m_currency;
    long                 m_id;
    ENUM_NEWS_CATEGORY   m_category;
+   ENUM_NEWS_IMPACT     m_impact;
    MachineLearningModel m_machineLearning;
    NewsHistoryModel     m_history[];
    SmartAnalysisModel   m_smartAnalysis;
@@ -32,6 +33,7 @@ public:
       const ENUM_CURRENCY        currency,
       const long                 id,
       const ENUM_NEWS_CATEGORY   category,
+      const ENUM_NEWS_IMPACT     impact,
       const MachineLearningModel&machineLearning,
       const NewsHistoryModel    &history[],
       const SmartAnalysisModel  &smartAnalysis
@@ -41,6 +43,7 @@ public:
       this.m_currency          = currency;
       this.m_id                = id;
       this.m_category          = category;
+      this.m_impact            = impact;
       this.setHistory(history);
       this.m_machineLearning   = machineLearning;
       this.m_smartAnalysis     = smartAnalysis;
@@ -51,6 +54,7 @@ public:
       const ENUM_CURRENCY        currency,
       const long                 id,
       const ENUM_NEWS_CATEGORY   category,
+      const ENUM_NEWS_IMPACT     impact,
       const MachineLearningModel&machineLearning,
       const SmartAnalysisModel  &smartAnalysis
    )
@@ -59,6 +63,7 @@ public:
       this.m_currency          = currency;
       this.m_id                = id;
       this.m_category          = category;
+      this.m_impact            = impact;
       this.m_machineLearning   = machineLearning;
       this.m_smartAnalysis     = smartAnalysis;
    }
@@ -70,6 +75,7 @@ public:
       this.m_currency         = StringToCurrency(json["Currency"].ToStr());
       this.m_id               = json["Event_ID"].ToInt();
       this.m_category         = StringToCategory(json["Category"].ToStr());
+      this.m_impact           = StringToImpact(json["Impact"].ToStr());
 
       CJAVal temp;
 
@@ -83,6 +89,7 @@ public:
             this.increaseHistory();
             this.m_history[h].actual      = temp["Actual"].ToDbl();
             this.m_history[h].category    = StringToCategory(temp["Category"].ToStr());
+            this.m_history[h].impact      = this.m_impact;
             this.m_history[h].currency    = this.m_currency;
             this.m_history[h].date        = StringToTime(temp["Date"].ToStr());
             this.m_history[h].id          = this.m_id;
@@ -90,7 +97,6 @@ public:
             this.m_history[h].name        = this.m_name;
             this.m_history[h].outcome     = StringToStrategy(temp["Outcome"].ToStr());
             this.m_history[h].previous    = temp["Previous"].ToDbl();
-            this.m_history[h].projection  = temp["Projection"].ToDbl();
             this.m_history[h].quality     = StringToQuality(temp["Quality"].ToStr());
             this.m_history[h].strength    = StringToStrength(temp["Strength"].ToStr());
          }
@@ -180,6 +186,7 @@ public:
          if(
             this.m_history[i].actual      == history.actual &&
             this.m_history[i].category    == history.category &&
+            this.m_history[i].impact      == history.impact &&
             this.m_history[i].currency    == history.currency &&
             this.m_history[i].date        == history.date &&
             this.m_history[i].id          == history.id &&
@@ -187,7 +194,6 @@ public:
             this.m_history[i].name        == history.name &&
             this.m_history[i].outcome     == history.outcome &&
             this.m_history[i].previous    == history.previous &&
-            this.m_history[i].projection  == history.projection &&
             this.m_history[i].quality     == history.quality &&
             this.m_history[i].strength    == history.strength
          )
@@ -215,6 +221,7 @@ public:
                // Swap elements
                temp.actual = this.m_history[j].actual;
                temp.category = this.m_history[j].category;
+               temp.impact = this.m_history[j].impact;
                temp.currency = this.m_history[j].currency;
                temp.date = this.m_history[j].date;
                temp.forecast = this.m_history[j].forecast;
@@ -222,12 +229,12 @@ public:
                temp.id = this.m_history[j].id;
                temp.outcome = this.m_history[j].outcome;
                temp.previous = this.m_history[j].previous;
-               temp.projection = this.m_history[j].projection;
                temp.quality = this.m_history[j].quality;
                temp.strength = this.m_history[j].strength;
 
                this.m_history[j].actual = this.m_history[j + 1].actual;
                this.m_history[j].category = this.m_history[j + 1].category;
+               this.m_history[j].impact = this.m_history[j + 1].impact;
                this.m_history[j].currency = this.m_history[j + 1].currency;
                this.m_history[j].date = this.m_history[j + 1].date;
                this.m_history[j].id  =  this.m_history[j + 1].id;
@@ -235,12 +242,12 @@ public:
                this.m_history[j].name = this.m_history[j + 1].name;
                this.m_history[j].outcome = this.m_history[j + 1].outcome;
                this.m_history[j].previous = this.m_history[j + 1].previous;
-               this.m_history[j].projection = this.m_history[j + 1].projection;
                this.m_history[j].quality = this.m_history[j + 1].quality;
                this.m_history[j].strength = this.m_history[j + 1].strength;
 
                this.m_history[j + 1].actual = temp.actual;
                this.m_history[j + 1].category = temp.category;
+               this.m_history[j + 1].impact = temp.impact;
                this.m_history[j + 1].currency = temp.currency;
                this.m_history[j + 1].date = temp.date;
                this.m_history[j + 1].id = temp.id;
@@ -248,7 +255,6 @@ public:
                this.m_history[j + 1].name = temp.name;
                this.m_history[j + 1].outcome = temp.outcome;
                this.m_history[j + 1].previous = temp.previous;
-               this.m_history[j + 1].projection = temp.projection;
                this.m_history[j + 1].quality = temp.quality;
                this.m_history[j + 1].strength = temp.strength;
             }
@@ -263,6 +269,7 @@ public:
       {
          this.m_history[i].actual      = history[i].actual;
          this.m_history[i].category    = history[i].category;
+         this.m_history[i].impact      = history[i].impact;
          this.m_history[i].currency    = history[i].currency;
          this.m_history[i].date        = history[i].date;
          this.m_history[i].id          = history[i].id;
@@ -270,7 +277,6 @@ public:
          this.m_history[i].name        = history[i].name;
          this.m_history[i].outcome     = history[i].outcome;
          this.m_history[i].previous    = history[i].previous;
-         this.m_history[i].projection  = history[i].projection;
          this.m_history[i].quality     = history[i].quality;
          this.m_history[i].strength    = history[i].strength;
       }

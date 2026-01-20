@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                      Structs.mqh |
-//|                                     Copyright 2024-2025,JBlanked |
+//|                                     Copyright 2024-2026,JBlanked |
 //|                                        https://www.jblanked.com/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2024-2025,JBlanked"
+#property copyright "Copyright 2024-2026,JBlanked"
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property strict
 #include <jb-news\\JSON.mqh>
@@ -17,10 +17,10 @@ public:
    long              id;
    ENUM_CURRENCY     currency;
    ENUM_NEWS_CATEGORY category;
+   ENUM_NEWS_IMPACT  impact;
    double            actual;
    double            forecast;
    double            previous;
-   double            projection;
    ENUM_NEWS_STRATEGY outcome;
    ENUM_NEWS_STRENGTH strength;
    ENUM_NEWS_QUALITY quality;
@@ -37,6 +37,7 @@ public:
       this.forecast  = json["Forecast"].ToDbl();
       this.previous  = json["Previous"].ToDbl();
       this.category  = StringToCategory(json["Category"].ToStr());
+      this.impact    = StringToImpact(json["Impact"].ToStr());
       this.date      = StringToTime(json["Date"].ToStr());
       this.id        = json["Event_ID"].ToInt();
       this.name      = json["Name"].ToStr();
@@ -44,7 +45,6 @@ public:
       this.quality   = StringToQuality(json["Quality"].ToStr());
       this.strength  = StringToStrength(json["Strength"].ToStr());
       this.currency  = StringToCurrency(json["Currency"].ToStr());
-      this.projection = json["Projection"].ToDbl();
    }
 
 

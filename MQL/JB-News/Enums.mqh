@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                        Enums.mqh |
-//|                                     Copyright 2024-2025,JBlanked |
+//|                                     Copyright 2024-2026,JBlanked |
 //|                                        https://www.jblanked.com/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2024-2025,JBlanked"
+#property copyright "Copyright 2024-2026,JBlanked"
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property strict
 
@@ -19,6 +19,14 @@ enum ENUM_NEWS_SOURCE
    NEWS_SOURCE_MQL5          = 0, // MQL5
    NEWS_SOURCE_FOREX_FACTORY = 1, // Forex Factory
    NEWS_SOURCE_FXSTREET      = 2, // FxStreet
+};
+
+enum ENUM_NEWS_IMPACT
+{
+   NEWS_IMPACT_NONE = -1,  // None (Gray)
+   NEWS_IMPACT_HIGH = 0,   // High (Red)
+   NEWS_IMPACT_MEDIUM = 1, // Medium (Orange)
+   NEWS_IMPACT_LOW = 2,    // Low (Yellow)
 };
 
 enum ENUM_NEWS_FREQUENCY
@@ -319,9 +327,7 @@ ENUM_NEWS_CATEGORY StringToCategory(string category)
    }
 
    return No_Category; // -1
-
 }
-
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -495,6 +501,51 @@ ENUM_NEWS_QUALITY StringToQuality(string quality)
    return Good_Data;
 }
 //+------------------------------------------------------------------+
+//| Returns a stringified version of a news impact enum              |
+//+------------------------------------------------------------------+
+string NewsImpactToString(const ENUM_NEWS_IMPACT newsImpact)
+{
+   switch(newsImpact)
+   {
+   case NEWS_IMPACT_HIGH:
+      return "High";
+   case NEWS_IMPACT_MEDIUM:
+      return "Medium";
+   case NEWS_IMPACT_LOW:
+      return "Low";
+   default:
+      return "None";
+   }
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+color NewsImpactToColor(const ENUM_NEWS_IMPACT newsImpact)
+{
+   switch(newsImpact)
+   {
+   case NEWS_IMPACT_HIGH:
+      return clrRed;
+   case NEWS_IMPACT_MEDIUM:
+      return clrOrange;
+   case NEWS_IMPACT_LOW:
+      return clrYellow;
+   default:
+      return clrGray;
+   }
+}
+//+------------------------------------------------------------------+
+//| Returns a news impact enum based on string                       |
+//+------------------------------------------------------------------+
+ENUM_NEWS_IMPACT StringToImpact(const string impact)
+{
+   return
+      impact == "High"   ? NEWS_IMPACT_HIGH :
+      impact == "Medium" ? NEWS_IMPACT_MEDIUM :
+      impact == "Low"    ? NEWS_IMPACT_LOW :
+      NEWS_IMPACT_NONE;
+}
+//+------------------------------------------------------------------+
 //| Returns the start date of the frequency based on the current time|
 //+------------------------------------------------------------------+
 datetime NewsFrequencyToDate(const ENUM_NEWS_FREQUENCY newsFrequency, const datetime timeCurrent = 0)
@@ -627,7 +678,296 @@ string NewsFrequencyToEndpoint(const ENUM_NEWS_FREQUENCY newsFrequency, const EN
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-string NewsEventToString(ENUM_NEWS_EVENTS news_event_choice)
+ENUM_NEWS_IMPACT NewsEventImpact(const ENUM_NEWS_EVENTS newsEvent)
+{
+   switch(newsEvent)
+   {
+   case Average_Hourly_Earnings_monthly:
+      return NEWS_IMPACT_HIGH;
+   case Average_Hourly_Earnings_yearly:
+      return NEWS_IMPACT_HIGH;
+   case JOLTS_Job_Openings:
+      return NEWS_IMPACT_HIGH;
+   case Core_PPI_monthly:
+      return NEWS_IMPACT_HIGH;
+   case Core_PPI_yearly:
+      return NEWS_IMPACT_HIGH;
+   case PPI_monthly:
+      return NEWS_IMPACT_HIGH;
+   case PPI_yearly:
+      return NEWS_IMPACT_HIGH;
+   case Core_CPI_monthly:
+      return NEWS_IMPACT_HIGH;
+   case Core_CPI_yearly:
+      return NEWS_IMPACT_HIGH;
+   case CPI_monthly:
+      return NEWS_IMPACT_HIGH;
+   case CPI_yearly:
+      return NEWS_IMPACT_HIGH;
+   case Core_PCE_Price_Index_monthly:
+      return NEWS_IMPACT_HIGH;
+   case Fed_Chair_Powell_Speech:
+      return NEWS_IMPACT_HIGH;
+   case Fed_Governor_Jefferson_Speech:
+      return NEWS_IMPACT_LOW;
+   case Fed_Governor_Waller_Speech:
+      return NEWS_IMPACT_LOW;
+   case Fed_Vice_Chair_for_Supervision_Barr_Speech:
+      return NEWS_IMPACT_LOW;
+   case FOMC_Member_Williams_Speech:
+      return NEWS_IMPACT_LOW;
+   case Fed_Governor_Cook_Speech:
+      return NEWS_IMPACT_LOW;
+   case FOMC_Minutes:
+      return NEWS_IMPACT_HIGH;
+   case Fed_Interest_Rate_Decision:
+      return NEWS_IMPACT_HIGH;
+   case FOMC_Press_Conference:
+      return NEWS_IMPACT_HIGH;
+   case Unemployment_Rate:
+      return NEWS_IMPACT_HIGH;
+   case Nonfarm_Payrolls:
+      return NEWS_IMPACT_HIGH;
+   case Initial_Jobless_Claims:
+      return NEWS_IMPACT_LOW;
+   case EIA_Crude_Oil_Stocks_Change:
+      return NEWS_IMPACT_MEDIUM;
+   case Trade_Balance:
+      return NEWS_IMPACT_LOW;
+   case EIA_Natural_Gas_Storage_Change:
+      return NEWS_IMPACT_MEDIUM;
+   case ISM_Manufacturing_PMI:
+      return NEWS_IMPACT_MEDIUM;
+   case ISM_Non_Manufacturing_PMI:
+      return NEWS_IMPACT_MEDIUM;
+   case Michigan_Consumer_Sentiment:
+      return NEWS_IMPACT_MEDIUM;
+   case Retail_Sales_monthly:
+      return NEWS_IMPACT_LOW;
+   case Core_Retail_Sales_monthly:
+      return NEWS_IMPACT_LOW;
+   case Retail_Sales_yearly:
+      return NEWS_IMPACT_LOW;
+   case ADP_Nonfarm_Employment_Change:
+      return NEWS_IMPACT_MEDIUM;
+   case GDP_quarterly:
+      return NEWS_IMPACT_HIGH;
+   case GDP_monthly:
+      return NEWS_IMPACT_HIGH;
+   case BoE_Interest_Rate_Decision:
+      return NEWS_IMPACT_HIGH;
+   case BoE_Governor_Bailey_Speech:
+      return NEWS_IMPACT_HIGH;
+   case PPI_Input_monthly:
+      return NEWS_IMPACT_LOW;
+   case PPI_Output_monthly:
+      return NEWS_IMPACT_LOW;
+   case PPI_Input_yearly:
+      return NEWS_IMPACT_LOW;
+   case PPI_Output_yearly:
+      return NEWS_IMPACT_LOW;
+   case Core_PPI_Output_monthly:
+      return NEWS_IMPACT_MEDIUM;
+   case Core_PPI_Output_yearly:
+      return NEWS_IMPACT_MEDIUM;
+   case ECB_President_Lagarde_Speech:
+      return NEWS_IMPACT_HIGH;
+   case Industrial_Production_monthly:
+      return NEWS_IMPACT_LOW;
+   case Industrial_Production_yearly:
+      return NEWS_IMPACT_LOW;
+   case Manufacturing_Production_monthly:
+      return NEWS_IMPACT_LOW;
+   case Manufacturing_Production_yearly:
+      return NEWS_IMPACT_LOW;
+   case ECB_Interest_Rate_Decision:
+      return NEWS_IMPACT_HIGH;
+   case Ivey_PMI:
+      return NEWS_IMPACT_MEDIUM;
+   case BoC_Interest_Rate_Decision:
+      return NEWS_IMPACT_HIGH;
+   case BoC_Governor_Macklem_Speech:
+      return NEWS_IMPACT_MEDIUM;
+   case RBA_Interest_Rate_Decision:
+      return NEWS_IMPACT_HIGH;
+   case Employment_Change:
+      return NEWS_IMPACT_MEDIUM;
+   case BoJ_Interest_Rate_Decision:
+      return NEWS_IMPACT_HIGH;
+   case BoJ_Press_Conference:
+      return NEWS_IMPACT_HIGH;
+   case SNB_Interest_Rate_Decision:
+      return NEWS_IMPACT_HIGH;
+   case SNB_News_Conference:
+      return NEWS_IMPACT_HIGH;
+   case BoJ_Tankan_Large_Manufacturing_Index:
+      return NEWS_IMPACT_LOW;
+   case BoJ_Tankan_Large_Non_Manufacturing_Index:
+      return NEWS_IMPACT_LOW;
+   case BoC_Monetary_Policy_Report_Press_Conference:
+      return NEWS_IMPACT_HIGH;
+   case RBNZ_Interest_Rate_Decision:
+      return NEWS_IMPACT_HIGH;
+   case RBNZ_Press_Conference:
+      return NEWS_IMPACT_HIGH;
+   case BoC_Financial_System_Review_Press_Conference:
+      return NEWS_IMPACT_HIGH;
+   case Budget_Release:
+      return NEWS_IMPACT_LOW;
+   case SNB_Chairman_Jordan_Speech:
+      return NEWS_IMPACT_HIGH;
+   case CPI_quarterly:
+      return NEWS_IMPACT_HIGH;
+   case RBA_Trimmed_Mean_CPI_quarterly:
+      return NEWS_IMPACT_HIGH;
+   case PPI_quarterly:
+      return NEWS_IMPACT_HIGH;
+   case Claimant_Count_Change:
+      return NEWS_IMPACT_MEDIUM;
+   case Employment_Change_quarterly:
+      return NEWS_IMPACT_MEDIUM;
+   case PPI_Input_quarterly:
+      return NEWS_IMPACT_MEDIUM;
+   case PPI_Output_quarterly:
+      return NEWS_IMPACT_MEDIUM;
+   case CPI_sa_monthly:
+      return NEWS_IMPACT_HIGH;
+   case IPPI_monthly:
+      return NEWS_IMPACT_MEDIUM;
+   case RMPI_monthly:
+      return NEWS_IMPACT_MEDIUM;
+   case CB_Consumer_Confidence_Index:
+      return NEWS_IMPACT_MEDIUM;
+   case Durable_Goods_Orders_monthly:
+      return NEWS_IMPACT_LOW;
+   case Core_Durable_Goods_Orders_monthly:
+      return NEWS_IMPACT_LOW;
+   case GDP_yearly:
+      return NEWS_IMPACT_HIGH;
+   case Average_Weekly_Earnings_Total_Pay_yearly:
+      return NEWS_IMPACT_HIGH;
+   case Retail_Sales_quarterly:
+      return NEWS_IMPACT_LOW;
+   case Current_Account:
+      return NEWS_IMPACT_LOW;
+   case Electronic_Card_Retail_Sales_monthly:
+      return NEWS_IMPACT_LOW;
+   case Electronic_Card_Retail_Sales_yearly:
+      return NEWS_IMPACT_LOW;
+   case Adjusted_Trade_Balance:
+      return NEWS_IMPACT_LOW;
+   case Adjusted_Current_Account:
+      return NEWS_IMPACT_LOW;
+   case Household_Spending_yearly:
+      return NEWS_IMPACT_LOW;
+   case Factory_Orders_monthly:
+      return NEWS_IMPACT_LOW;
+   case Factory_Orders_yearly:
+      return NEWS_IMPACT_LOW;
+   case HICP_monthly:
+      return NEWS_IMPACT_MEDIUM;
+   case RBNZ_2_Year_Inflation_Expectations:
+      return NEWS_IMPACT_HIGH;
+   case Import_Price_Index_monthly:
+      return NEWS_IMPACT_LOW;
+   case Import_Price_Index_yearly:
+      return NEWS_IMPACT_LOW;
+   case Export_Price_Index_monthly:
+      return NEWS_IMPACT_LOW;
+   case Export_Price_Index_yearly:
+      return NEWS_IMPACT_LOW;
+   case NY_Fed_Empire_State_Manufacturing_Index:
+      return NEWS_IMPACT_LOW;
+   case Michigan_Consumer_Expectations:
+      return NEWS_IMPACT_LOW;
+   case Michigan_Inflation_Expectations:
+      return NEWS_IMPACT_LOW;
+   case Michigan_5_Year_Inflation_Expectations:
+      return NEWS_IMPACT_MEDIUM;
+   case Baker_Hughes_US_Oil_Rig_Count:
+      return NEWS_IMPACT_LOW;
+   case Baker_Hughes_US_Total_Rig_Count:
+      return NEWS_IMPACT_LOW;
+   case Manufacturing_Sales_monthly:
+      return NEWS_IMPACT_LOW;
+   case GDP_3m_3m:
+      return NEWS_IMPACT_HIGH;
+   case ECB_Deposit_Facility_Rate_Decision:
+      return NEWS_IMPACT_HIGH;
+   case ECB_Marginal_Lending_Facility_Rate_Decision:
+      return NEWS_IMPACT_HIGH;
+   case Wholesale_Trade_monthly:
+      return NEWS_IMPACT_LOW;
+   case Retail_Control_monthly:
+      return NEWS_IMPACT_LOW;
+   case Foreign_Securities_Purchases:
+      return NEWS_IMPACT_LOW;
+   case Existing_Home_Sales:
+      return NEWS_IMPACT_LOW;
+   case Existing_Home_Sales_monthly:
+      return NEWS_IMPACT_LOW;
+   case au_Jibun_Bank_Manufacturing_PMI:
+      return NEWS_IMPACT_LOW;
+   case au_Jibun_Bank_Services_PMI:
+      return NEWS_IMPACT_LOW;
+   case au_Jibun_Bank_Composite_PMI:
+      return NEWS_IMPACT_LOW;
+   case Global_Manufacturing_PMI:
+      return NEWS_IMPACT_LOW;
+   case Global_Services_PMI:
+      return NEWS_IMPACT_LOW;
+   case Global_Composite_PMI:
+      return NEWS_IMPACT_LOW;
+   case New_Home_Sales:
+      return NEWS_IMPACT_LOW;
+   case New_Home_Sales_monthly:
+      return NEWS_IMPACT_LOW;
+   case Pending_Home_Sales_monthly:
+      return NEWS_IMPACT_LOW;
+   case Pending_Home_Sales_yearly:
+      return NEWS_IMPACT_LOW;
+   case Core_Machinery_Orders_monthly:
+      return NEWS_IMPACT_LOW;
+   case Core_Machinery_Orders_yearly:
+      return NEWS_IMPACT_LOW;
+   case BoJ_Bank_Lending_yearly:
+      return NEWS_IMPACT_LOW;
+   case BoJ_Corporate_Goods_Price_Index_monthly:
+      return NEWS_IMPACT_HIGH;
+   case BoJ_Corporate_Goods_Price_Index_yearly:
+      return NEWS_IMPACT_HIGH;
+   case Non_Manufacturing_PMI:
+      return NEWS_IMPACT_LOW;
+   case Composite_PMI:
+      return NEWS_IMPACT_LOW;
+   case Tokyo_Core_CPI_yearly:
+      return NEWS_IMPACT_HIGH;
+   case Tokyo_CPI_sa_monthly:
+      return NEWS_IMPACT_HIGH;
+   case BoJ_Weighted_Median_Core_CPI_yearly:
+      return NEWS_IMPACT_HIGH;
+   case BoJ_M2_Money_Stock_yearly:
+      return NEWS_IMPACT_LOW;
+   case BoJ_Monetary_Base_yearly:
+      return NEWS_IMPACT_MEDIUM;
+   case Labor_Cost_Index_quarterly:
+      return NEWS_IMPACT_MEDIUM;
+   case Labor_Cost_Index_yearly:
+      return NEWS_IMPACT_MEDIUM;
+   case Labor_Cash_Earnings_yearly:
+      return NEWS_IMPACT_HIGH;
+   case Real_Wage_yearly:
+      return NEWS_IMPACT_MEDIUM;
+   case Federal_Budget_Balance:
+      return NEWS_IMPACT_LOW;
+   default:
+      return NEWS_IMPACT_NONE;
+   };
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+string NewsEventToString(const ENUM_NEWS_EVENTS news_event_choice)
 {
    string event = "";
 
