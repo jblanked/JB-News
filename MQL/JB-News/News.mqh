@@ -1,14 +1,14 @@
 //+------------------------------------------------------------------+
 //|                                                 News-Library.mqh |
-//|                                     Copyright 2024-2025,JBlanked |
+//|                                     Copyright 2024-2026,JBlanked |
 //|                          https://www.jblanked.com/news/api/docs/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2024-2025,JBlanked"
+#property copyright "Copyright 2024-2026,JBlanked"
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property description "Access JBlanked's News Library."
 #property strict
 #include <jb-news\\Models.mqh>
-// Last Update: November 29th, 2025
+// Last Update: January 20th, 2026
 
 #import "Wininet.dll"
 int InternetOpenW(string name, int config, string, string, int);
@@ -118,8 +118,6 @@ public:
    long              eventIDs[];                // holds a list of all the event IDs after using the .get method
 
    bool              chart(                     // displays this weeks history on the chart
-      const color colorOfLine,
-      const color colorOfText,
       const ENUM_NEWS_SOURCE newsSource = NEWS_SOURCE_MQL5
    );
 
@@ -190,6 +188,7 @@ public:
       ENUM_CURRENCY        currency;
       long                 id;
       ENUM_NEWS_CATEGORY   category;
+      ENUM_NEWS_IMPACT     impact;
       NewsHistoryModel     history[];
       int                  eventCount;
       MachineLearningModel machineLearning;
@@ -374,18 +373,21 @@ private:
 //+------------------------------------------------------------------+
 //|           displays this weeks history on the chart               |
 //+------------------------------------------------------------------+
-bool CJBNews::chart(const color colorOfLine, const color colorOfText, const ENUM_NEWS_SOURCE newsSource = NEWS_SOURCE_MQL5)
+bool CJBNews::chart(const ENUM_NEWS_SOURCE newsSource = NEWS_SOURCE_MQL5)
 {
    if(this.calendar(NEWS_FREQUENCY_WEEK, newsSource))
    {
+      static color _color = clrGray;
       for(int j = 0; j < ArraySize(this.calenderInfo); j++)
       {
+         _color = NewsImpactToColor(this.calenderInfo[j].impact);
+
          this.Chart_V_Line(
             "CJBNews-" + (string)this.calenderInfo[j].date,
             ChartPriceMin(),
             this.calenderInfo[j].date,
             1,
-            colorOfLine
+            _color
          );
 
          this.Chart_Angled_Text(
@@ -394,7 +396,7 @@ bool CJBNews::chart(const color colorOfLine, const color colorOfText, const ENUM
             this.calenderInfo[j].date,
             "   " + EnumToString(this.calenderInfo[j].currency) + "  -  " + this.calenderInfo[j].name,
             8,
-            colorOfText
+            _color
          );
       }
       return true;
@@ -679,6 +681,7 @@ bool CJBNews::load(const long eventID)
          this.info.currency   = this.newsInfo[a].m_currency;
          this.info.id         = this.newsInfo[a].m_id;
          this.info.category   = this.newsInfo[a].m_category;
+         this.info.impact     = this.newsInfo[a].m_impact;
 
          this.info.eventCount = ArraySize(this.newsInfo[a].m_history);
          ArrayResize(this.info.history, this.info.eventCount);
