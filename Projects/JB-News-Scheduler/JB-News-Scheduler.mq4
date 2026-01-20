@@ -1,11 +1,11 @@
 //+------------------------------------------------------------------+
 //|                                            JB-News-Scheduler.mq5 |
-//|                                     Copyright 2024-2025,JBlanked |
+//|                                     Copyright 2024-2026,JBlanked |
 //|                                        https://www.jblanked.com/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2024-2025,JBlanked"
+#property copyright "Copyright 2024-2026,JBlanked"
 #property link      "https://www.jblanked.com/"
-#property version   "1.02"
+#property version   "1.03"
 #property description "Visualize news events or use it in an expert advisor"
 #property strict
 #property indicator_chart_window
@@ -42,9 +42,7 @@
 #include <jb-news\\news.mqh>
 
 input  string           inpApiKey     = "API-KEY";        // API Key
-input  ENUM_NEWS_SOURCE inpNewsSource = NEWS_SOURCE_MQL5; // News Source 
-sinput color            inpTextColor  = clrBeige;         // Text Color
-sinput color            inpLineColor  = clrCyan;          // Line Color
+input  ENUM_NEWS_SOURCE inpNewsSource = NEWS_SOURCE_MQL5; // News Source
 input  int              inpOffset     = 0;                // Offset
 
 CJBNews *jb;
@@ -84,7 +82,7 @@ int OnInit()
    jb.api_key = inpApiKey;
    jb.offset  = inpOffset;
 //---
-   if(jb.chart(inpTextColor, inpLineColor, inpNewsSource))
+   if(jb.chart(inpNewsSource))
    {
       amountOfEvents = ArraySize(jb.calenderInfo);
       Print("[OnInit]: Calendar fetched! " + string(amountOfEvents) + " events available");
@@ -174,7 +172,7 @@ void OnTimer()
    {
       if(jb.calenderInfo[j].date == iTime(_Symbol, PERIOD_M5, 0))
       {
-         if(!jb.chart(inpTextColor, inpLineColor, inpNewsSource))
+         if(!jb.chart(inpNewsSource))
          {
             Print("[OnTimer]: Failed to update chart data...");
          }
