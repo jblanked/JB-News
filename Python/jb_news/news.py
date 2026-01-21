@@ -62,6 +62,7 @@ class EventInfo:
         "currency",
         "event_id",
         "category",
+        "impact",
         "history",
         "machine_learning",
         "smart_analysis",
@@ -74,6 +75,7 @@ class EventInfo:
         currency: str,
         event_id: int,
         category: str,
+        impact: str,
         history: list,
         machine_learning: dict,
         smart_analysis: dict,
@@ -82,6 +84,7 @@ class EventInfo:
         self.currency: str = currency
         self.event_id: int = event_id
         self.category: str = category
+        self.impact: str = impact
         self.history: list = history
         self.machine_learning: dict = machine_learning
         self.smart_analysis: dict = smart_analysis
@@ -239,32 +242,17 @@ class JBNews:
 
     def __search(self, currency: str, event_id: int) -> bool:
         """Searches for the event"""
+        event: dict
         for event in self.list:
             if str(event["Event_ID"]) == str(event_id):
-                try:
-                    category = event["Category"]
-                except KeyError:
-                    category = "N/A"
-                try:
-                    history = event["History"]
-                except KeyError:
-                    history = []
-                try:
-                    machine_learning = event["MachineLearning"]
-                except KeyError:
-                    machine_learning = {}
-                try:
-                    smart_analysis = event["SmartAnalysis"]
-                except KeyError:
-                    smart_analysis = {}
-
                 self.info.name = event["Name"]
                 self.info.currency = currency
                 self.info.event_id = event["Event_ID"]
-                self.info.category = category
-                self.info.history = history
-                self.info.machine_learning = machine_learning
-                self.info.smart_analysis = smart_analysis
+                self.info.category = event.get("Category", "N/A")
+                self.info.impact = event.get("Impact", "None")
+                self.info.history = event.get("History", [])
+                self.info.machine_learning = event.get("MachineLearning", {})
+                self.info.smart_analysis = event.get("SmartAnalysis", {})
                 return True
 
         return False
@@ -275,74 +263,36 @@ class JBNews:
             self.event_names.append(event["Name"])
             self.event_ids.append(event["Event_ID"])
 
-    def __set_basic_list(self, events: list, currency: str):
+    def __set_basic_list(self, events: list, currency: str) -> None:
         """Sets the basic list"""
+        event: dict
         for event in events:
-            try:
-                category = event["Category"]
-            except KeyError:
-                category = "N/A"
-            try:
-                history = event["History"]
+            history = event.get("History", [])
 
-                if self.offset != 0:
-                    for item in history:
-                        item["Date"] = datetime.datetime.strptime(
-                            item["Date"], "%Y.%m.%d %H:%M:%S"
-                        ) - datetime.timedelta(hours=self.offset)
-
-            except KeyError:
-                history = []
-            try:
-                machine_learning = event["MachineLearning"]
-            except KeyError:
-                machine_learning = {}
-            try:
-                smart_analysis = event["SmartAnalysis"]
-            except KeyError:
-                smart_analysis = {}
+            if self.offset != 0 and history:
+                for item in history:
+                    item["Date"] = datetime.datetime.strptime(
+                        item["Date"], "%Y.%m.%d %H:%M:%S"
+                    ) - datetime.timedelta(hours=self.offset)
 
             self.list.append(
                 {
                     "Name": event["Name"],
                     "Currency": currency,
                     "Event_ID": event["Event_ID"],
-                    "Category": category,
+                    "Category": event.get("Category", "N/A"),
+                    "Impact": event.get("Impact", "None"),
                     "History": history,
-                    "MachineLearning": machine_learning,
-                    "SmartAnalysis": smart_analysis,
+                    "MachineLearning": event.get("MachineLearning", {}),
+                    "SmartAnalysis": event.get("SmartAnalysis", {}),
                 }
             )
 
     def __set_calendar_list(self, json_data: dict):
         """Sets the calendar list"""
         self.calendar_info = []
+        data: dict
         for data in json_data:
-            try:
-                event_id = data["Event_ID"]
-            except KeyError:
-                event_id = "N/A"
-            try:
-                category = data["Category"]
-            except KeyError:
-                category = "N/A"
-            try:
-                outcome = data["Outcome"]
-            except KeyError:
-                outcome = "N/A"
-            try:
-                strength = data["Strength"]
-            except KeyError:
-                strength = "N/A"
-            try:
-                quality = data["Quality"]
-            except KeyError:
-                quality = "N/A"
-            try:
-                projection = data["Projection"]
-            except KeyError:
-                projection = "N/A"
-
             if self.offset == 0:
                 date = data["Date"]
             else:
@@ -354,16 +304,16 @@ class JBNews:
                 CalendarInfo(
                     name=data["Name"],
                     currency=data["Currency"],
-                    event_id=event_id,
-                    category=category,
+                    event_id=data.get("Event_ID", "N/A"),
+                    category=data.get("Category", "N/A"),
                     date=date,
                     actual=data["Actual"],
                     forecast=data["Forecast"],
                     previous=data["Previous"],
-                    outcome=outcome,
-                    strength=strength,
-                    quality=quality,
-                    projection=projection,
+                    outcome=data.get("Outcome", "N/A"),
+                    strength=data.get("Strength", "N/A"),
+                    quality=data.get("Quality", "N/A"),
+                    projection=data.get("Projection", "N/A"),
                 )
             )
 
