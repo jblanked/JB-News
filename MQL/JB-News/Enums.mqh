@@ -87,16 +87,17 @@ enum ENUM_NEWS_STRATEGY
 
 enum ENUM_CURRENCY
 {
-   USD = 0, // USD
-   EUR = 1, // EUR
-   GBP = 2, // GBP
-   AUD = 3, // AUD
-   NZD = 4, // NZD
-   CHF = 5, // CHF
-   JPY = 6, // JPY
-   CAD = 7, // CAD
-   CNY = 8, // CNY
-   XAU = 9, // XAU
+   CURRENCY_NONE = -1, // None
+   CURRENCY_USD = 0,   // USD
+   CURRENCY_EUR = 1,   // EUR
+   CURRENCY_GBP = 2,   // GBP
+   CURRENCY_AUD = 3,   // AUD
+   CURRENCY_NZD = 4,   // NZD
+   CURRENCY_CHF = 5,   // CHF
+   CURRENCY_JPY = 6,   // JPY
+   CURRENCY_CAD = 7,   // CAD
+   CURRENCY_CNY = 8,   // CNY
+   CURRENCY_XAU = 9,   // XAU
 };
 
 enum ENUM_NEWS_EVENTS
@@ -333,43 +334,74 @@ ENUM_NEWS_CATEGORY StringToCategory(string category)
 //+------------------------------------------------------------------+
 ENUM_CURRENCY     StringToCurrency(const string currency)
 {
-
+   if(currency == "USD" || currency == "0")
+   {
+      return CURRENCY_USD; // 0
+   }
    if(currency == "EUR" || currency == "1")
    {
-      return EUR; // 1
+      return CURRENCY_EUR; // 1
    }
    if(currency == "GBP" || currency == "2")
    {
-      return GBP; // 2
+      return CURRENCY_GBP; // 2
    }
    if(currency == "AUD" || currency == "3")
    {
-      return AUD; // 3
+      return CURRENCY_AUD; // 3
    }
    if(currency == "NZD" || currency == "4")
    {
-      return NZD; // 4
+      return CURRENCY_NZD; // 4
    }
    if(currency == "CHF" || currency == "5")
    {
-      return CHF; // 5
+      return CURRENCY_CHF; // 5
    }
    if(currency == "JPY" || currency == "6")
    {
-      return JPY; // 6
+      return CURRENCY_JPY; // 6
    }
    if(currency == "CAD" || currency == "7")
    {
-      return CAD; // 7
+      return CURRENCY_CAD; // 7
    }
    if(currency == "CNY" || currency == "8")
    {
-      return CNY; // 8
+      return CURRENCY_CNY; // 8
    }
 
-   return USD; // 0
+   return CURRENCY_NONE; // -1
 }
-
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+string CurrencyToEnum(const ENUM_CURRENCY currency)
+{
+   switch(currency)
+   {
+   case CURRENCY_USD:
+      return "USD";
+   case CURRENCY_EUR:
+      return "EUR";
+   case CURRENCY_GBP:
+      return "GBP";
+   case CURRENCY_AUD:
+      return "AUD";
+   case CURRENCY_NZD:
+      return "NZD";
+   case CURRENCY_CHF:
+      return "CHF";
+   case CURRENCY_JPY:
+      return "JPY";
+   case CURRENCY_CAD:
+      return "CAD";
+   case CURRENCY_CNY:
+      return "CNY";
+   default:
+      return "";
+   }
+}
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -1463,467 +1495,467 @@ ulong NewsEventID(ENUM_CURRENCY currency, ENUM_NEWS_EVENTS news_event, ENUM_NEWS
    switch(news_event)
    {
    case Average_Hourly_Earnings_monthly:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840030018;
       break;
    case Average_Hourly_Earnings_yearly:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840030019;
       break;
    case JOLTS_Job_Openings:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840030021;
       break;
    case Core_PPI_monthly:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840030002;
       break;
    case Core_PPI_yearly:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840030004;
       break;
    case PPI_monthly:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840030001;
-      else if(currency == EUR)
+      else if(currency == CURRENCY_EUR)
          event_id = 999030005;
-      else if(currency == CHF)
+      else if(currency == CURRENCY_CHF)
          event_id = 756020003;
       break;
    case PPI_yearly:
-      if(currency == CHF)
+      if(currency == CURRENCY_CHF)
          event_id = 756020004;
-      else if(currency == EUR)
+      else if(currency == CURRENCY_EUR)
          event_id = 999030006;
-      else if(currency == AUD)
+      else if(currency == CURRENCY_AUD)
          event_id = 36010030;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840030003;
       break;
    case Core_CPI_monthly:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 999030010;
-      else if(currency == CAD)
+      else if(currency == CURRENCY_CAD)
          event_id = 124010005;
-      else if(currency == GBP)
+      else if(currency == CURRENCY_GBP)
          event_id = 826010043;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840030006;
       break;
    case Core_CPI_yearly:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 999030012;
-      else if(currency == JPY)
+      else if(currency == CURRENCY_JPY)
          event_id = 392030003;
-      else if(currency == CAD)
+      else if(currency == CURRENCY_CAD)
          event_id = 124010006;
-      else if(currency == GBP)
+      else if(currency == CURRENCY_GBP)
          event_id = 826010013;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840030008;
       break;
    case CPI_monthly:
-      if(currency == CHF)
+      if(currency == CURRENCY_CHF)
          event_id = 756020001;
-      else if(currency == EUR)
+      else if(currency == CURRENCY_EUR)
          event_id = 999030011;
-      else if(currency == CAD)
+      else if(currency == CURRENCY_CAD)
          event_id = 124010003;
-      else if(currency == GBP)
+      else if(currency == CURRENCY_GBP)
          event_id = 826010011;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840030005;
       break;
    case CPI_yearly:
       switch(currency)
       {
-      case CHF:
+      case CURRENCY_CHF:
          event_id = 756020002;
          break;
-      case EUR:
+      case CURRENCY_EUR:
          event_id = 999030013;
          break;
-      case JPY:
+      case CURRENCY_JPY:
          event_id = 392030001;
          break;
-      case CAD:
+      case CURRENCY_CAD:
          event_id = 124010004;
          break;
-      case NZD:
+      case CURRENCY_NZD:
          event_id = 554010006;
          break;
-      case AUD:
+      case CURRENCY_AUD:
          event_id = 36010015;
          break;
-      case GBP:
+      case CURRENCY_GBP:
          event_id = 826010012;
          break;
-      case USD:
+      case CURRENCY_USD:
          event_id = 840030007;
          break;
       }
       break;
    case Core_PCE_Price_Index_monthly:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840010001;
       break;
    case Fed_Interest_Rate_Decision:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840050014;
       break;
    case Unemployment_Rate:
       switch(currency)
       {
-      case CHF:
+      case CURRENCY_CHF:
          event_id = 756040003;
          break;
-      case EUR:
+      case CURRENCY_EUR:
          event_id = 999030020;
          break;
-      case JPY:
+      case CURRENCY_JPY:
          event_id = 392030007;
          break;
-      case CAD:
+      case CURRENCY_CAD:
          event_id = 124010014;
          break;
-      case NZD:
+      case CURRENCY_NZD:
          event_id = 554010014;
          break;
-      case AUD:
+      case CURRENCY_AUD:
          event_id = 36010006;
          break;
-      case GBP:
+      case CURRENCY_GBP:
          event_id = 826010003;
          break;
-      case USD:
+      case CURRENCY_USD:
          event_id = 840030015;
          break;
       }
       break;
    case Nonfarm_Payrolls:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840030016;
       break;
    case Initial_Jobless_Claims:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840140001;
       break;
    case EIA_Crude_Oil_Stocks_Change:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840200001;
       break;
    case Trade_Balance:
       switch(currency)
       {
-      case CHF:
+      case CURRENCY_CHF:
          event_id = 756030003;
          break;
-      case EUR:
+      case CURRENCY_EUR:
          event_id = 999030018;
          break;
-      case JPY:
+      case CURRENCY_JPY:
          event_id = 392040002;
          break;
-      case CAD:
+      case CURRENCY_CAD:
          event_id = 124010018;
          break;
-      case NZD:
+      case CURRENCY_NZD:
          event_id = 554010009;
          break;
-      case AUD:
+      case CURRENCY_AUD:
          event_id = 36010011;
          break;
-      case GBP:
+      case CURRENCY_GBP:
          event_id = 826010029;
          break;
-      case USD:
+      case CURRENCY_USD:
          event_id = 840020001;
          break;
       }
       break;
    case EIA_Natural_Gas_Storage_Change:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840200009;
       break;
    case ISM_Manufacturing_PMI:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840040001;
       break;
    case ISM_Non_Manufacturing_PMI:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840040003;
       break;
    case Michigan_Consumer_Sentiment:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840210001;
       break;
    case Retail_Sales_monthly:
       switch(currency)
       {
-      case EUR:
+      case CURRENCY_EUR:
          event_id = 999030003;
          break;
-      case JPY:
+      case CURRENCY_JPY:
          event_id = 392020002;
          break;
-      case CAD:
+      case CURRENCY_CAD:
          event_id = 124010007;
          break;
-      case AUD:
+      case CURRENCY_AUD:
          event_id = 36010012;
          break;
-      case GBP:
+      case CURRENCY_GBP:
          event_id = 826010019;
          break;
-      case USD:
+      case CURRENCY_USD:
          event_id = 840020010;
          break;
       }
       break;
    case Core_Retail_Sales_monthly:
-      if(currency == CAD)
+      if(currency == CURRENCY_CAD)
          event_id = 124010008;
-      else if(currency == GBP)
+      else if(currency == CURRENCY_GBP)
          event_id = 826010021;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840020011;
       break;
    case Retail_Sales_yearly:
       switch(currency)
       {
-      case CHF:
+      case CURRENCY_CHF:
          event_id = 756020007;
          break;
-      case EUR:
+      case CURRENCY_EUR:
          event_id = 999030004;
          break;
-      case JPY:
+      case CURRENCY_JPY:
          event_id = 392020003;
          break;
-      case NZD:
+      case CURRENCY_NZD:
          event_id = 554010021;
          break;
-      case GBP:
+      case CURRENCY_GBP:
          event_id = 826010020;
          break;
-      case USD:
+      case CURRENCY_USD:
          event_id = 840020025;
          break;
       }
       break;
    case ADP_Nonfarm_Employment_Change:
-      if(currency == CAD)
+      if(currency == CURRENCY_CAD)
          event_id = 124070001;
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840190001;
       break;
    case GDP_quarterly:
       switch(currency)
       {
-      case CHF:
+      case CURRENCY_CHF:
          event_id = 756040001;
          break;
-      case EUR:
+      case CURRENCY_EUR:
          event_id = 999030016;
          break;
-      case JPY:
+      case CURRENCY_JPY:
          event_id = 392010001;
          break;
-      case CAD:
+      case CURRENCY_CAD:
          event_id = 124010022;
          break;
-      case NZD:
+      case CURRENCY_NZD:
          event_id = 554010024;
          break;
-      case AUD:
+      case CURRENCY_AUD:
          event_id = 36010019;
          break;
-      case GBP:
+      case CURRENCY_GBP:
          event_id = 826010037;
          break;
-      case USD:
+      case CURRENCY_USD:
          event_id = 840010007;
          break;
       }
       break;
    case GDP_monthly:
-      if(currency == CAD)
+      if(currency == CURRENCY_CAD)
          event_id = 124010021;
-      if(currency == GBP)
+      if(currency == CURRENCY_GBP)
          event_id = 826010039;
       break;
    case BoE_Interest_Rate_Decision:
-      if(currency == GBP)
+      if(currency == CURRENCY_GBP)
          event_id = 826020009;
       break;
    case PPI_Input_monthly:
-      if(currency == GBP)
+      if(currency == CURRENCY_GBP)
          event_id = 826010005;
       break;
    case PPI_Output_monthly:
-      if(currency == GBP)
+      if(currency == CURRENCY_GBP)
          event_id = 826010007;
       break;
    case PPI_Input_yearly:
-      if(currency == GBP)
+      if(currency == CURRENCY_GBP)
          event_id = 826010006;
       break;
    case PPI_Output_yearly:
-      if(currency == GBP)
+      if(currency == CURRENCY_GBP)
          event_id = 826010008;
       break;
    case Core_PPI_Output_monthly:
-      if(currency == GBP)
+      if(currency == CURRENCY_GBP)
          event_id = 826010009;
       break;
    case Core_PPI_Output_yearly:
-      if(currency == GBP)
+      if(currency == CURRENCY_GBP)
          event_id = 826010010;
       break;
    case Industrial_Production_monthly:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 999030007;
-      else if(currency == JPY)
+      else if(currency == CURRENCY_JPY)
          event_id = 392020006;
-      else if(currency == GBP)
+      else if(currency == CURRENCY_GBP)
          event_id = 826010025;
       break;
    case Industrial_Production_yearly:
-      if(currency == CHF)
+      if(currency == CURRENCY_CHF)
          event_id = 756020006;
-      else if(currency == EUR)
+      else if(currency == CURRENCY_EUR)
          event_id = 999030008;
-      else if(currency == JPY)
+      else if(currency == CURRENCY_JPY)
          event_id = 392020007;
-      else if(currency == GBP)
+      else if(currency == CURRENCY_GBP)
          event_id = 826010026;
       break;
    case Manufacturing_Production_monthly:
-      if(currency == GBP)
+      if(currency == CURRENCY_GBP)
          event_id = 826010027;
       break;
    case Manufacturing_Production_yearly:
-      if(currency == GBP)
+      if(currency == CURRENCY_GBP)
          event_id = 826010028;
       break;
    case ECB_Interest_Rate_Decision:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 999010007;
       break;
    case Ivey_PMI:
-      if(currency == CAD)
+      if(currency == CURRENCY_CAD)
          event_id = 124020001;
       break;
    case BoC_Interest_Rate_Decision:
-      if(currency == CAD)
+      if(currency == CURRENCY_CAD)
          event_id = 124040006;
       break;
    case RBA_Interest_Rate_Decision:
-      if(currency == AUD)
+      if(currency == CURRENCY_AUD)
          event_id = 36030008;
       break;
    case Employment_Change:
-      if(currency == CAD)
+      if(currency == CURRENCY_CAD)
          event_id = 124010011;
-      else if(currency == AUD)
+      else if(currency == CURRENCY_AUD)
          event_id = 36010003;
       break;
    case BoJ_Interest_Rate_Decision:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392060022;
       break;
    case SNB_Interest_Rate_Decision:
-      if(currency == CHF)
+      if(currency == CURRENCY_CHF)
          event_id = 756010001;
       break;
    case BoJ_Tankan_Large_Manufacturing_Index:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392060008;
       break;
    case BoJ_Tankan_Large_Non_Manufacturing_Index:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392060010;
       break;
    case RBNZ_Interest_Rate_Decision:
-      if(currency == NZD)
+      if(currency == CURRENCY_NZD)
          event_id = 554020009;
       break;
    case CPI_quarterly:
-      if(currency == AUD)
+      if(currency == CURRENCY_AUD)
          event_id = 36010014;
       break;
    case RBA_Trimmed_Mean_CPI_quarterly:
-      if(currency == AUD)
+      if(currency == CURRENCY_AUD)
          event_id = 36030014;
       break;
    case PPI_quarterly:
-      if(currency == AUD)
+      if(currency == CURRENCY_AUD)
          event_id = 36010029;
       break;
    case Claimant_Count_Change:
-      if(currency == GBP)
+      if(currency == CURRENCY_GBP)
          event_id = 826010004;
       break;
    case Employment_Change_quarterly:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 999030001;
-      else if(currency == NZD)
+      else if(currency == CURRENCY_NZD)
          event_id = 554010016;
       break;
    case PPI_Input_quarterly:
-      if(currency == NZD)
+      if(currency == CURRENCY_NZD)
          event_id = 554010022;
       break;
    case PPI_Output_quarterly:
-      if(currency == NZD)
+      if(currency == CURRENCY_NZD)
          event_id = 554010023;
       break;
    case CPI_sa_monthly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392030010;
       break;
    case IPPI_monthly:
-      if(currency == CAD)
+      if(currency == CURRENCY_CAD)
          event_id = 124010024;
       break;
    case RMPI_monthly:
-      if(currency == CAD)
+      if(currency == CURRENCY_CAD)
          event_id = 124010026;
       break;
    case CB_Consumer_Confidence_Index:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840180002;
       break;
    case Durable_Goods_Orders_monthly:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840020013;
       break;
    case Core_Durable_Goods_Orders_monthly:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840020014;
       break;
    case GDP_yearly:
       switch(currency)
       {
-      case CHF:
+      case CURRENCY_CHF:
          event_id = 756040002;
          break;
-      case EUR:
+      case CURRENCY_EUR:
          event_id = 999030017;
          break;
-      case JPY:
+      case CURRENCY_JPY:
          event_id = 392010003;
          break;
-      case CAD:
+      case CURRENCY_CAD:
          event_id = 124010035;
          break;
-      case NZD:
+      case CURRENCY_NZD:
          event_id = 554010025;
          break;
-      case AUD:
+      case CURRENCY_AUD:
          event_id = 36010020;
          break;
-      case GBP:
+      case CURRENCY_GBP:
          event_id = 826010038;
          break;
       }
@@ -1932,237 +1964,237 @@ ulong NewsEventID(ENUM_CURRENCY currency, ENUM_NEWS_EVENTS news_event, ENUM_NEWS
       event_id = 1;
       break;
    case Retail_Sales_quarterly:
-      if(currency == NZD)
+      if(currency == CURRENCY_NZD)
          event_id = 554010019;
-      if(currency == AUD)
+      if(currency == CURRENCY_AUD)
          event_id = 36010038;
       break;
    case Electronic_Card_Retail_Sales_monthly:
-      if(currency == NZD)
+      if(currency == CURRENCY_NZD)
          event_id = 554010001;
       break;
    case Electronic_Card_Retail_Sales_yearly:
-      if(currency == NZD)
+      if(currency == CURRENCY_NZD)
          event_id = 554010002;
       break;
    case Adjusted_Trade_Balance:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392040001;
       break;
    case Adjusted_Current_Account:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392070008;
       break;
    case Household_Spending_yearly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392030008;
       break;
    case Factory_Orders_monthly:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 276010018;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840020003;
       break;
    case Factory_Orders_yearly:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 276010019;
       break;
    case HICP_monthly:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 380010003;
       break;
    case RBNZ_2_Year_Inflation_Expectations:
-      if(currency == NZD)
+      if(currency == CURRENCY_NZD)
          event_id = 554020010;
       break;
    case Import_Price_Index_monthly:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 276010003;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840030011;
       break;
    case Import_Price_Index_yearly:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 276010004;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840030012;
       break;
    case Export_Price_Index_monthly:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 276010005;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840030013;
       break;
    case Export_Price_Index_yearly:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 276010006;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840030014;
       break;
    case Michigan_Consumer_Expectations:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840210002;
       break;
    case Michigan_Inflation_Expectations:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840210004;
       break;
    case Michigan_5_Year_Inflation_Expectations:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840210005;
       break;
    case Baker_Hughes_US_Oil_Rig_Count:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840100001;
       break;
    case Baker_Hughes_US_Total_Rig_Count:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840100002;
       break;
    case Manufacturing_Sales_monthly:
-      if(currency == CAD)
+      if(currency == CURRENCY_CAD)
          event_id = 124010029;
       break;
    case GDP_3m_3m:
-      if(currency == GBP)
+      if(currency == CURRENCY_GBP)
          event_id = 826010040;
       break;
    case ECB_Deposit_Facility_Rate_Decision:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 999010006;
       break;
    case ECB_Marginal_Lending_Facility_Rate_Decision:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 999010015;
       break;
    case Wholesale_Trade_monthly:
-      if(currency == CAD)
+      if(currency == CURRENCY_CAD)
          event_id = 124010031;
       break;
    case Retail_Control_monthly:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840020012;
       break;
    case Foreign_Securities_Purchases:
-      if(currency == CAD)
+      if(currency == CURRENCY_CAD)
          event_id = 124010019;
       break;
    case Existing_Home_Sales:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840120001;
       break;
    case au_Jibun_Bank_Manufacturing_PMI:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392500001;
       break;
    case au_Jibun_Bank_Services_PMI:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392500002;
       break;
    case au_Jibun_Bank_Composite_PMI:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392500003;
       break;
    case Global_Manufacturing_PMI:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 999500001;
-      else if(currency == CAD)
+      else if(currency == CURRENCY_CAD)
          event_id = 124500001;
-      else if(currency == AUD)
+      else if(currency == CURRENCY_AUD)
          event_id = 36500001;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840500001;
       break;
    case Global_Services_PMI:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 999500002;
-      else if(currency == AUD)
+      else if(currency == CURRENCY_AUD)
          event_id = 36500002;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840500002;
       break;
    case Global_Composite_PMI:
-      if(currency == EUR)
+      if(currency == CURRENCY_EUR)
          event_id = 999500003;
-      else if(currency == AUD)
+      else if(currency == CURRENCY_AUD)
          event_id = 36500003;
-      else if(currency == USD)
+      else if(currency == CURRENCY_USD)
          event_id = 840500003;
       break;
    case New_Home_Sales:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840020008;
       break;
    case New_Home_Sales_monthly:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840020009;
       break;
    case Pending_Home_Sales_monthly:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840120003;
       break;
    case Pending_Home_Sales_yearly:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840120004;
       break;
    case Core_Machinery_Orders_monthly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392010009;
       break;
    case Core_Machinery_Orders_yearly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392010010;
       break;
    case BoJ_Bank_Lending_yearly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392060013;
       break;
    case BoJ_Corporate_Goods_Price_Index_monthly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392060014;
       break;
    case BoJ_Corporate_Goods_Price_Index_yearly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392060015;
       break;
    case Tokyo_Core_CPI_yearly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392030006;
       break;
    case Tokyo_CPI_sa_monthly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392030011;
       break;
    case BoJ_M2_Money_Stock_yearly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392060012;
       break;
    case BoJ_Weighted_Median_Core_CPI_yearly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392060038;
       break;
    case BoJ_Monetary_Base_yearly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392060011;
       break;
    case Labor_Cost_Index_quarterly:
-      if(currency == NZD)
+      if(currency == CURRENCY_NZD)
          event_id = 554010017;
       break;
    case Labor_Cost_Index_yearly:
-      if(currency == NZD)
+      if(currency == CURRENCY_NZD)
          event_id = 554010018;
       break;
    case Labor_Cash_Earnings_yearly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392050001;
       break;
    case Real_Wage_yearly:
-      if(currency == JPY)
+      if(currency == CURRENCY_JPY)
          event_id = 392050004;
       break;
    case Federal_Budget_Balance:
-      if(currency == USD)
+      if(currency == CURRENCY_USD)
          event_id = 840150001;
       break;
 
