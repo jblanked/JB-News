@@ -36,8 +36,7 @@ bool HttpSendRequestW(int hRequest, string lpszHeaders, int dwHeadersLength, uch
 
       jb.offset = 0; // GMT-3 = 0, GMT = 3, EST = 7, PST = 10
 
-      jb.chart(clrAliceBlue,clrWhite);
-
+      jb.chart();
 
       return INIT_SUCCEEDED;
    }
