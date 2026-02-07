@@ -376,7 +376,7 @@ ENUM_CURRENCY     StringToCurrency(const string currency)
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-string CurrencyToEnum(const ENUM_CURRENCY currency)
+string CurrencyToString(const ENUM_CURRENCY currency)
 {
    switch(currency)
    {
