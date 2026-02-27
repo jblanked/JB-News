@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2024-2026,JBlanked"
 #property link      "https://www.jblanked.com/"
-#property version   "1.03"
+#property version   "1.04"
 #property description "Visualize news events or use it in an expert advisor"
 #property strict
 #property indicator_chart_window

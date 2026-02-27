@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2024-2025,JBlanked LLC"
 #property link      "https://www.jblanked.com/trading-tools/"
-#property version   "1.01"
+#property version   "1.02"
 #property description "An MT4 and MT5 expert advisor that trades using JBlanked's NewsAPI"
 #property strict
 
@@ -40,7 +40,7 @@ input  group "Trade Settings"
 #else
 input  string            inpTrade      = "====Trade Settings===="; //------------------->
 #endif
-input ENUM_CURRENCY      inpCurrency   = USD;                                          // News Currency
+input ENUM_CURRENCY      inpCurrency   = CURRENCY_USD;                                 // News Currency
 input ENUM_NEWS_EVENTS   inpNewsEvent  = Core_CPI_monthly;                             // News Event
 input ENUM_NEWS_STRATEGY inpBuyStrat   = actual_more_than_forecast_equal_to_previous;  // Buy Strategy
 input ENUM_NEWS_STRATEGY inpSellStrat  = actual_less_than_forecast_equal_to_previous;  // Sell Strategy

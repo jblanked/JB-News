@@ -8,7 +8,7 @@
 #property description "Access JBlanked's News Library."
 #property strict
 #include <jb-news\\Models.mqh>
-// Last Update: January 20th, 2026
+// Last Update: February 27th, 2026
 
 #import "Wininet.dll"
 int InternetOpenW(string name, int config, string, string, int);
@@ -393,7 +393,7 @@ bool CJBNews::chart(const ENUM_NEWS_SOURCE newsSource = NEWS_SOURCE_MQL5)
             "CJBNews-Ang-" + (string)this.calenderInfo[j].date,
             ChartPriceMin(),
             this.calenderInfo[j].date,
-            "   " + EnumToString(this.calenderInfo[j].currency) + "  -  " + this.calenderInfo[j].name,
+            "   " + CurrencyToString(this.calenderInfo[j].currency) + "  -  " + this.calenderInfo[j].name,
             8,
             _color
          );
