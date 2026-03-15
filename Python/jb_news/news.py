@@ -22,7 +22,6 @@ class CalendarInfo:
         "outcome",
         "strength",
         "quality",
-        "projection",
     )
 
     def __init__(
@@ -38,7 +37,6 @@ class CalendarInfo:
         outcome: str,
         strength: str,
         quality: str,
-        projection: str,
     ) -> None:
         self.name = name
         self.currency = currency
@@ -51,7 +49,6 @@ class CalendarInfo:
         self.outcome = outcome
         self.strength = strength
         self.quality = quality
-        self.projection = projection
 
 
 class EventInfo:
@@ -313,7 +310,6 @@ class JBNews:
                     outcome=data.get("Outcome", "N/A"),
                     strength=data.get("Strength", "N/A"),
                     quality=data.get("Quality", "N/A"),
-                    projection=data.get("Projection", "N/A"),
                 )
             )
 
