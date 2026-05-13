@@ -1,4 +1,4 @@
 # jb_news/__init__.py
-from .news import CJBNews
+from .news import JBNews
 
-__all__ = ["CJBNews"]
+__all__ = ["JBNews"]
