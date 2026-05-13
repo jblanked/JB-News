@@ -20,7 +20,7 @@ This API is freely accessible through our library and through GET requests. Get 
 After installation, import the class:
 
 ```python
-from jb_news.news import JBNews 
+from jb_news.news import JBNews, NEWS_SOURCE_MQL5, NEWS_SOURCE_FOREX_FACTORY, NEWS_SOURCE_FXSTREET
 ```
 Then set a variable as an instance of the JBNews class:
 
