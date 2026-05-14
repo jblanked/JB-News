@@ -237,6 +237,13 @@ class JBNews:
         self.__set_basic_list(jpy_events, "JPY")
         self.__set_basic_list(nzd_events, "NZD")
 
+    def __headers(self, api_key: str) -> dict:
+        """Returns the headers for API requests"""
+        return {
+            "Content-Type": "application/json",
+            "Authorization": f"Api-Key {api_key}",
+        }
+
     def __search(self, currency: str, event_id: int) -> bool:
         """Searches for the event"""
         event: dict
@@ -336,11 +343,8 @@ class JBNews:
 
         if not self.__validate_api_key(api_key):
             return False
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Api-Key {api_key}",
-        }
-        response = requests.get(url, headers=headers, timeout=10)
+
+        response = requests.get(url, headers=self.__headers(api_key), timeout=10)
 
         if response.status_code == 200:
             data = response.json()
@@ -355,11 +359,8 @@ class JBNews:
         url = f"https://www.jblanked.com/news/api/{news_source}/full-list/"
         if not self.__validate_api_key(api_key):
             return False
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Api-Key {api_key}",
-        }
-        response = requests.get(url, headers=headers, timeout=10)
+
+        response = requests.get(url, headers=self.__headers(api_key), timeout=10)
 
         if response.status_code == 200:
             data = response.json()
@@ -385,11 +386,8 @@ class JBNews:
         url = f"https://www.jblanked.com/news/api/{news_source}/list/"
         if not self.__validate_api_key(api_key):
             return []
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Api-Key {api_key}",
-        }
-        response = requests.get(url, headers=headers, timeout=10)
+
+        response = requests.get(url, headers=self.__headers(api_key), timeout=10)
         if response.status_code == 200:
             return response.json()
         print(f"Error: {response.status_code}")
@@ -401,12 +399,11 @@ class JBNews:
         url = "https://www.jblanked.com/news/api/gpt/"
         if not self.__validate_api_key(api_key):
             return "Error: Invalid API Key"
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Api-Key {api_key}",
-        }
+        headers = self.__headers(api_key)
         data = {"content": message}
-        response = requests.post(url, headers=headers, json=data, timeout=10)
+        response = requests.post(
+            url, headers=self.__headers(api_key), json=data, timeout=10
+        )
 
         if response.status_code == 200:
             task_id = response.json()["task_id"]
