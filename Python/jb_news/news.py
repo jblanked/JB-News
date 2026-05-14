@@ -366,6 +366,32 @@ class JBNews:
         print(response.json())
         return False
 
+    def get_list(self, api_key: str, news_source: str = NEWS_SOURCE_MQL5) -> list[dict]:
+        """
+        Returns a JSON list of dictionaries of all available News Events from the specified news source.
+
+        Each dictionary contains the following:
+            - Name: The name of the news event.
+            - Currency: The currency associated with the news event.
+            - Event_ID: The unique identifier for the news event.
+            - Category: The category of the news event (e.g., Consumer Inflation Report, Interest Rate Report).
+            - Impact: The impact level of the news event (e.g., High, Medium, Low)
+        """
+        url = f"https://www.jblanked.com/news/api/{news_source}/list/"
+        if len(api_key) < 30:
+            print("Error: Invalid API Key")
+            return []
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Api-Key {api_key}",
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        if response.status_code == 200:
+            return response.json()
+        print(f"Error: {response.status_code}")
+        print(response.json())
+        return []
+
     def gpt(self, api_key: str, message: str, delay: int = 1) -> str:
         """Sends and receives data to the NewsGPT API"""
         url = "https://www.jblanked.com/news/api/gpt/"
