@@ -313,6 +313,13 @@ class JBNews:
                 )
             )
 
+    def __validate_api_key(self, api_key: str) -> bool:
+        """Validates the API key"""
+        if len(api_key) < 30:
+            print("Error: Invalid API Key")
+            return False
+        return True
+
     def calendar(
         self,
         api_key: str,
@@ -327,8 +334,7 @@ class JBNews:
         else:
             url += "/week/"
 
-        if len(api_key) < 30:
-            print("Error: Invalid API Key")
+        if not self.__validate_api_key(api_key):
             return False
         headers = {
             "Content-Type": "application/json",
@@ -347,8 +353,7 @@ class JBNews:
     def get(self, api_key: str, news_source: str = NEWS_SOURCE_MQL5) -> bool:
         """Gets the news data"""
         url = f"https://www.jblanked.com/news/api/{news_source}/full-list/"
-        if len(api_key) < 30:
-            print("Error: Invalid API Key")
+        if not self.__validate_api_key(api_key):
             return False
         headers = {
             "Content-Type": "application/json",
@@ -378,8 +383,7 @@ class JBNews:
             - Impact: The impact level of the news event (e.g., High, Medium, Low)
         """
         url = f"https://www.jblanked.com/news/api/{news_source}/list/"
-        if len(api_key) < 30:
-            print("Error: Invalid API Key")
+        if not self.__validate_api_key(api_key):
             return []
         headers = {
             "Content-Type": "application/json",
@@ -395,8 +399,7 @@ class JBNews:
     def gpt(self, api_key: str, message: str, delay: int = 1) -> str:
         """Sends and receives data to the NewsGPT API"""
         url = "https://www.jblanked.com/news/api/gpt/"
-        if len(api_key) < 30:
-            print("Error: Invalid API Key")
+        if not self.__validate_api_key(api_key):
             return "Error: Invalid API Key"
         headers = {
             "Content-Type": "application/json",
