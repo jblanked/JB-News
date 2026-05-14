@@ -376,7 +376,9 @@ class JBNews:
         print(response.json())
         return False
 
-    def get_list(self, api_key: str, news_source: str = NEWS_SOURCE_MQL5) -> list[dict]:
+    def get_list(
+        self, api_key: str, news_source: str = NEWS_SOURCE_MQL5, currency: str = None
+    ) -> list[dict]:
         """
         Returns a JSON list of dictionaries of all available News Events from the specified news source.
 
@@ -386,8 +388,15 @@ class JBNews:
             - Event_ID: The unique identifier for the news event.
             - Category: The category of the news event (e.g., Consumer Inflation Report, Interest Rate Report).
             - Impact: The impact level of the news event (e.g., High, Medium, Low)
+
+        Args:
+            api_key (str): Your API key for authentication.
+            news_source (str): The news source to fetch data from (e.g., "mql5", "forex-factory", "fxstreet").
+            currency (str, optional): The currency to filter news events by (e.g., "USD", "EUR"). If None, returns news events for all currencies.
         """
         url = f"https://www.jblanked.com/news/api/{news_source}/list/"
+        if currency is not None:
+            url += f"{currency}/"
         if not self.__validate_api_key(api_key):
             return []
 
