@@ -6,8 +6,8 @@
 #property copyright "Copyright 2024-2026,JBlanked"
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property strict
-#include <jb-news\\JSON.mqh>
-#include <jb-news\\Enums.mqh>
+#include "JSON.mqh"
+#include "Enums.mqh"
 
 struct NewsHistoryModel
 {

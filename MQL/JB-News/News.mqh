@@ -7,7 +7,7 @@
 #property link      "https://www.jblanked.com/news/api/docs/"
 #property description "Access JBlanked's News Library."
 #property strict
-#include <jb-news\\Models.mqh>
+#include "Models.mqh"
 // Last Update: February 27th, 2026
 
 #import "Wininet.dll"
