@@ -296,12 +296,9 @@ public:
       return true;
    }
 
-   string            result; // used to hold API request json
+   string getRequest(const string url);
 
 private:
-   uchar             buffer[1024];
-   int               bytesRead;
-
    int               k;
    int               l;
    int               a;
@@ -407,83 +404,26 @@ bool CJBNews::chart(const ENUM_NEWS_SOURCE newsSource = NEWS_SOURCE_MQL5)
 //+------------------------------------------------------------------+
 bool CJBNews::calendar(ENUM_NEWS_FREQUENCY newsFrequency, ENUM_NEWS_SOURCE newsSource = NEWS_SOURCE_MQL5)
 {
-   if(StringLen(this.api_key) < 30)
-   {
-      Print("Incorrect API Key");
-      return false;
-   }
-
-   this.bytesRead = 0;
-   this.result = "";
    const string url = NewsFrequencyToEndpoint(newsFrequency, newsSource);
-   const string headers = "Content-Type: application/json" + "\r\n" + "Authorization: Api-Key " + api_key;
+   string result = getRequest(url);
+   if(result == "") return false;
+   this.JSON.Deserialize(result, CP_UTF8); // deserialize into JSON format
 
-// Initialize WinHTTP
-   const int hInternet = InternetOpenW(NEWS_USER_AGENT, 1, NULL, NULL, 0);
-   if(hInternet)
+   CJAVal temp;
+
+   ArrayResize(this.calenderInfo, 7000);
+   for(e = 0; e < 7000; e++)
    {
-      // Open a URL
-      const int hUrl = InternetOpenUrlW(hInternet, url, NULL, 0, 0, 0);
-      if(hUrl)
-      {
-         // Send the request headers
-         if(HttpSendRequestW(hUrl, headers, StringLen(headers), buffer, 0))
-         {
-            // Read the response
-            while(InternetReadFile(hUrl, buffer, ArraySize(buffer) - 1, bytesRead) && bytesRead > 0)
-            {
-               buffer[bytesRead] = 0; // Null-terminate the buffer
-               result += CharArrayToString(buffer, 0, bytesRead, CP_UTF8); // Append the data to the result string
-            }
-         }
-         else
-         {
-            return false;
-         }
+      temp = this.JSON[e];
 
-         InternetCloseHandle(hUrl); // Close the request handle
+      if(datetime(temp["Date"].ToStr()) == 0)
+         break;
 
-         InternetCloseHandle(hUrl); // Close the URL handle
-      }
-      else
-      {
-         return false;
-      }
-      InternetCloseHandle(hInternet); // Close the WinHTTP handle
-   }
-   else
-   {
-      return false;
+      this.calenderInfo[e].set(temp);
    }
 
-   if(result != "")
-   {
-      this.JSON.Deserialize(result, CP_UTF8); // deserialize into JSON format
-
-      CJAVal temp;
-
-      ArrayResize(this.calenderInfo, 7000);
-      for(e = 0; e < 7000; e++)
-      {
-         temp = this.JSON[e];
-
-         if(datetime(temp["Date"].ToStr()) == 0)
-            break;
-         else
-         {
-            this.calenderInfo[e].set(temp);
-         }
-
-      }
-
-      ArrayResize(this.calenderInfo, e + 1);
-
-      return true;
-   }
-   else
-   {
-      return false;
-   }
+   ArrayResize(this.calenderInfo, e + 1);
+   return true;
 }
 
 //+------------------------------------------------------------------+
@@ -703,64 +643,9 @@ bool CJBNews::load(const long eventID)
 //+------------------------------------------------------------------+
 bool CJBNews::get()
 {
-   if(StringLen(this.api_key) < 30)
-      return false;
-
-   this.bytesRead = 0;
-   this.result = "";
-   static const string url = "https://www.jblanked.com/news/api/mql5/full-list/";
-   const string headers = "Content-Type: application/json" + "\r\n" + "Authorization: Api-Key " + this.api_key;
-
-// Initialize WinHTTP
-   const int hInternet = InternetOpenW(NEWS_USER_AGENT, 1, NULL, NULL, 0);
-   if(hInternet)
-   {
-      // Open a URL
-      const int hUrl = InternetOpenUrlW(hInternet, url, NULL, 0, 0, 0);
-      if(hUrl)
-      {
-         // Send the request headers
-         if(HttpSendRequestW(hUrl, headers, StringLen(headers), this.buffer, 0))
-         {
-            // Read the response
-            while(InternetReadFile(hUrl, this.buffer, ArraySize(this.buffer) - 1, this.bytesRead) && this.bytesRead > 0)
-            {
-               this.buffer[this.bytesRead] = 0; // Null-terminate the buffer
-               this.result += CharArrayToString(this.buffer, 0, this.bytesRead, CP_UTF8); // Append the data to the result string
-            }
-         }
-         else
-         {
-            Print("Failed to send request headers");
-            return false;
-         }
-
-         InternetCloseHandle(hUrl); // Close the request handle
-
-         InternetCloseHandle(hUrl); // Close the URL handle
-      }
-      else
-      {
-         Print("Failed to open ", url);
-         return false;
-      }
-      InternetCloseHandle(hInternet); // Close the WinHTTP handle
-   }
-   else
-   {
-      Print("Failed to open internet");
-      return false;
-   }
-
-   if(this.result != "")
-   {
-      return this._deserialize(this.result);
-   }
-   else
-   {
-      Print("Failed! Data is empty");
-      return false;
-   }
+   string result = getRequest("https://www.jblanked.com/news/api/mql5/full-list/");
+   if(result == "") return false;
+   return this._deserialize(result);
 }
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -856,9 +741,7 @@ int CJBNews::amountOfDays(int current_month, int year)
    }
 
    return amount;
-
 }
-
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -867,8 +750,9 @@ string CJBNews::GPT(const string message)
    if(StringLen(api_key) < 30)
       return "Invalid API Key";
 
-   bytesRead = 0;
-   result = "";
+   uchar buffer[1024];
+   int bytesRead = 0;
+   string result = "";
    string tempMessage = "";
    int iter = 0;
 
@@ -898,12 +782,11 @@ string CJBNews::GPT(const string message)
 
       const string task_id = this.JSON["task_id"].ToStr();
 
-
       while(
          (tempMessage == "" || tempMessage == "Task started" || tempMessage == "Task is still processing")
          && iter < 15)
       {
-         this.result = "";
+         result = "";
          // run get request with wait
          Sleep(2000);
          // Initialize WinHTTP
@@ -954,9 +837,7 @@ string CJBNews::GPT(const string message)
          {
             return "Error... response returned nothing.";
          }
-
       }
-
 
    }
    else
@@ -1150,5 +1031,40 @@ ENUM_BULLISH_OR_BEARISH CJBNews::EventInfo::trend(MachineLearningOutcomeModel & 
    bearVal = bearVal == 0 ? 0 : bearVal / 3;
 
    return bullVal > bearVal ? ENUM_BULLISH : bullVal < bearVal ? ENUM_BEARISH : ENUM_NEUTRAL;
+}
+//+------------------------------------------------------------------+
+string CJBNews::getRequest(const string url)
+{
+   if(StringLen(this.api_key) < 30)
+      return "";
+
+   uchar buffer[1024];
+   int bytesRead = 0;
+   string result = "";
+   const string headers = "Content-Type: application/json" + "\r\n" + "Authorization: Api-Key " + this.api_key;
+
+// Initialize WinHTTP
+   const int hInternet = InternetOpenW(NEWS_USER_AGENT, 1, NULL, NULL, 0);
+   if(hInternet)
+   {
+      // Open a URL
+      const int hUrl = InternetOpenUrlW(hInternet, url, NULL, 0, 0, 0);
+      if(hUrl)
+      {
+         // Send the request headers
+         if(HttpSendRequestW(hUrl, headers, StringLen(headers), buffer, 0))
+         {
+            // Read the response
+            while(InternetReadFile(hUrl, buffer, ArraySize(buffer) - 1, bytesRead) && bytesRead > 0)
+            {
+               buffer[bytesRead] = 0; // Null-terminate the buffer
+               result += CharArrayToString(buffer, 0, bytesRead, CP_UTF8); // Append the data to the result string
+            }
+         }
+         InternetCloseHandle(hUrl); // Close the URL handle
+      }
+      InternetCloseHandle(hInternet); // Close the WinHTTP handle
+   }
+   return result;
 }
 //+------------------------------------------------------------------+
