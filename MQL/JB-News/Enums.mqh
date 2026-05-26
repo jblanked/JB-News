@@ -405,6 +405,33 @@ string CurrencyToString(const ENUM_CURRENCY currency)
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
+string NewsCategoryToString(const ENUM_NEWS_CATEGORY category)
+{
+   string cat = EnumToString(category);
+   StringReplace(cat, "_", " ");
+   return cat;
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+string NewsQualityToString(const ENUM_NEWS_QUALITY quality)
+{
+   string qual = EnumToString(quality);
+   StringReplace(qual, "_", " ");
+   return qual;
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+string NewsStrengthToString(const ENUM_NEWS_STRENGTH strength)
+{
+   string str = EnumToString(strength);
+   StringReplace(str, "_", " ");
+   return str;
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
 ENUM_NEWS_STRATEGY StringToStrategy(string strategy)
 {
 // remove _ from string if any
