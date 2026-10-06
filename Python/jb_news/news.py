@@ -23,6 +23,7 @@ class CalendarInfo:
         "strength",
         "quality",
         "impact",
+        "trend"
     )
 
     def __init__(
@@ -39,6 +40,7 @@ class CalendarInfo:
         strength: str,
         quality: str,
         impact: str,
+        trend: str,
     ) -> None:
         self.name = name
         self.currency = currency
@@ -52,6 +54,7 @@ class CalendarInfo:
         self.strength = strength
         self.quality = quality
         self.impact = impact
+        self.trend = trend
 
 
 class EventInfo:
@@ -321,6 +324,7 @@ class JBNews:
                     strength=data.get("Strength", "N/A"),
                     quality=data.get("Quality", "N/A"),
                     impact=data.get("Impact", "N/A"),
+                    trend=data.get("Trend", "N/A"),
                 )
             )
 

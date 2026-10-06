@@ -75,9 +75,10 @@ if jb.calendar(API_KEY,today=True,news_source=NEWS_SOURCE):
         outcome = event.outcome 
         strength = event.strength 
         quality = event.quality 
+        trend = event.trend 
 
         # print the calendar info
-        print(f"Event Name: {name}\nEvent ID: {event_id}\nCurrency: {currency}\nImpact: {impact}\nDate: {date}\nActual: {actual}\nForecast: {forecast}\nPrevious: {previous}")
+        print(f"Event Name: {name}\nEvent ID: {event_id}\nCurrency: {currency}\nImpact: {impact}\nDate: {date}\nActual: {actual}\nForecast: {forecast}\nPrevious: {previous}\nTrend: {trend}")
 ```
 
 You can also access our NewsGPT model:
