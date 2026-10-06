@@ -99,6 +99,7 @@ public:
             this.m_history[h].previous    = temp["Previous"].ToDbl();
             this.m_history[h].quality     = StringToQuality(temp["Quality"].ToStr());
             this.m_history[h].strength    = StringToStrength(temp["Strength"].ToStr());
+            this.m_history[h].trend       = StringToTrend(temp["Trend"].ToStr());
          }
          else
          {
@@ -195,7 +196,8 @@ public:
             this.m_history[i].outcome     == history.outcome &&
             this.m_history[i].previous    == history.previous &&
             this.m_history[i].quality     == history.quality &&
-            this.m_history[i].strength    == history.strength
+            this.m_history[i].strength    == history.strength &&
+            this.m_history[i].trend       == history.trend
          )
          {
             this.removeHistory(i);
@@ -231,6 +233,7 @@ public:
                temp.previous = this.m_history[j].previous;
                temp.quality = this.m_history[j].quality;
                temp.strength = this.m_history[j].strength;
+               temp.trend = this.m_history[j].trend;
 
                this.m_history[j].actual = this.m_history[j + 1].actual;
                this.m_history[j].category = this.m_history[j + 1].category;
@@ -244,6 +247,7 @@ public:
                this.m_history[j].previous = this.m_history[j + 1].previous;
                this.m_history[j].quality = this.m_history[j + 1].quality;
                this.m_history[j].strength = this.m_history[j + 1].strength;
+               this.m_history[j].trend = this.m_history[j + 1].trend;
 
                this.m_history[j + 1].actual = temp.actual;
                this.m_history[j + 1].category = temp.category;
@@ -257,6 +261,7 @@ public:
                this.m_history[j + 1].previous = temp.previous;
                this.m_history[j + 1].quality = temp.quality;
                this.m_history[j + 1].strength = temp.strength;
+               this.m_history[j + 1].trend = temp.trend;
             }
          }
       }
@@ -279,6 +284,7 @@ public:
          this.m_history[i].previous    = history[i].previous;
          this.m_history[i].quality     = history[i].quality;
          this.m_history[i].strength    = history[i].strength;
+         this.m_history[i].trend       = history[i].trend;
       }
    }
 

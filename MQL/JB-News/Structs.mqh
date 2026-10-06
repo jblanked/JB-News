@@ -24,6 +24,7 @@ public:
    ENUM_NEWS_STRATEGY outcome;
    ENUM_NEWS_STRENGTH strength;
    ENUM_NEWS_QUALITY quality;
+   ENUM_BULLISH_OR_BEARISH trend; 
 
    bool              isEventTime(datetime currentTime = 0)
    {
@@ -45,9 +46,8 @@ public:
       this.quality   = StringToQuality(json["Quality"].ToStr());
       this.strength  = StringToStrength(json["Strength"].ToStr());
       this.currency  = StringToCurrency(json["Currency"].ToStr());
+      this.trend     = StringToTrend(json["Trend"].ToStr());
    }
-
-
 };
 
 struct MachineLearningTrendModel

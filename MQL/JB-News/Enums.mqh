@@ -258,6 +258,10 @@ ENUM_BULLISH_OR_BEARISH StringToTrend(const string trendVar)
 {
    return ((trendVar == "ENUM_BULLISH") || (trendVar == "Bullish")) ? ENUM_BULLISH : ((trendVar == "ENUM_BEARISH") || (trendVar == "Bearish")) ? ENUM_BEARISH : ENUM_NEUTRAL;
 }
+string NewsTrendToString(ENUM_BULLISH_OR_BEARISH trend)
+{
+   return trend == ENUM_BULLISH ? "Bullish" : trend == ENUM_BEARISH ? "Bearish" : "Neutral";
+}
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+

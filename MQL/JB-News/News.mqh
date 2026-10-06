@@ -8,7 +8,7 @@
 #property description "Access JBlanked's News Library."
 #property strict
 #include "Models.mqh"
-// Last Update: May 26th, 2026
+// Last Update: October 6th, 2026
 
 #import "Wininet.dll"
 int InternetOpenW(string name, int config, string, string, int);
